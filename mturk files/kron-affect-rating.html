@@ -1,0 +1,438 @@
+<!-- ## Introduction -->
+<!-- This experiment is a picture rating task. On every trial, the subject sees a picture for 6 sec and then makes two different ratings about how the picture made them feel. There are two between-subjects independent variables: which scales are seen with which pictures and the order of picture presentation. There are three dependent variables: affective arousal ratings, bipolar valence ratings, and unipolar pleasant/unpleasant valence ratings. -->
+
+
+<!-- ## Code -->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emotion Survey</title>
+<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+<script src="mmturkey.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="style.css" />
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.14.0/jquery.validate.min.js"></script>
+</head>
+<body>
+
+<!-- The instructions slide. -->
+<div class="slide" id="instructions">
+  <br>
+  <img src="images/stanford.png" alt="Stanford University">
+  <h3 id='logo-text'>Stanford Psychophysiology Lab</h3>
+  <div class="block-text study-instr">
+  <p> In this study, we are interested in how people respond to pictures that represent a lot of different events that occur in life. For the next 15-20 minutes, you will be looking at different pictures projected on the screen in front of you, and you will be rating each picture in terms of how it made you feel while viewing it. 
+  <br> 
+  <br> 
+  You will be asked to make two different kinds of ratings for every picture. You will either rate your calm vs. aroused feelings and unpleasant vs. pleasant feelings, or you will separately rate your unpleasant feelings and your pleasant feelings. There are no right or wrong answers, so simply respond as honestly as you can.
+  <br>
+  <br>
+  Note that we are asking you to rate <em>your feelings</em> elicited by the pictures, not what is depicted in the pictures.</p>
+  </div>
+
+  <button type="button" onclick="this.blur(); showSlide('instructions2')">Next</button>
+  
+  <p class="block-text"><br> <b> This HIT will not work on mobile devices. Please use a computer browser and set your browser window to fullscreen. 
+  <br>
+  <br>Note: You won't be able to preview this HIT before accepting it because it's so short. </b></p>
+
+    <p class="block-text">
+  Some of the pictures you view may be of a graphic nature or may cause intense emotional responses. You must be at least 18 years old to participate.
+  </p>
+  
+  <p class="block-text" id="legal">By answering the
+  following questions, you are participating in a study being performed by
+  cognitive scientists in the Stanford Department of Psychology. If you have
+  questions about this research, please contact us at 
+  <a href="mailto://mtb@stanford.edu">mtb@stanford.edu</a>.
+  You must be  at least 18 years old to participate. Your participation in 
+  this research is voluntary. You may decline to answer any or all of the 
+  following questions. You may decline further participation, at any time, 
+  without adverse consequences. Your anonymity is assured; the researchers 
+  who have requested your participation will not receive any personal information 
+  about you. Note however that we have recently been made aware that your public 
+  Amazon.com profile can be accessed via your worker ID if you do not choose 
+  to opt out. If you would like to opt out of this feature, you may follow instructions available 
+  <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">here</a>.</p>
+</div>
+
+<div class="slide" id="instructions2">
+  <p class="block-text">Please read the question again in every new screen and
+  mark your rating for each picture before clicking "Next". You will not be able
+  to go back to previous screens.
+  <br>
+  <br>
+  First, you will practice the task a few times to make sure that you understand the instructions.
+  <br>
+  <br>
+  Please ensure that your browser is in fullscreen mode before you continue.
+  </p>
+  <button type="button" onclick="this.blur(); practice()">Start</button>
+</div>
+
+<div class="slide" id="instructions3">
+  <p class="block-text">Now that you've had a chance to practice, please begin the task.
+  </p>
+  <button type="button" onclick="this.blur(); experiment.next()">Start</button>
+</div>
+
+<!-- The stage slide -->
+<div class="slide" id="stage">
+
+  <div class="progress">
+    <div id="prog" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
+  </div>
+  
+  <br>
+
+<!-- The image slide: IAPS image presentation. -->
+  <div id="stage-content">
+    <div align="center">
+      <h4><b>Please view the image.</b></h4><br>
+    </div>
+    <div align="center">
+      <img id ="iaps"/> 
+    </div>
+  </div>
+
+
+<!-- The blank slide: ISI -->
+  <div id="blank-content">
+  </div>
+
+ <!-- The Bipolar Valence rating scale. -->
+<div id="bipolarvalence-content">
+<div align="center">
+  <h4><b>Please rate your feelings about the picture you just saw.</b></h4>
+  <br>
+  <h5>At one extreme of the scale, you feel completely unpleasant, unhappy, annoyed, unsatisfied, melancholic, or despaired. 
+  <br>
+  <br>
+  At the other end of the scale, you feel completely pleased, happy, satisfied, content, or hopeful. 
+  <br>
+  <br>
+  A score of 0 indicates a completely neutral, neither pleasant/happy nor unpleasant/sad state.</h5><br>
+</div>
+<table align = "center"><tr>
+<td align="center">
+  <tr>
+    <td>
+      <span class="bipolarvalence-instr">Unpleasant feelings</span>
+    </td>
+    <td> </td>
+    <td><label><input type="radio" name="judgment" value="-4">-4</label></td>
+    <td><label><input type="radio" name="judgment" value="-3">-3</label></td>
+    <td><label><input type="radio" name="judgment" value="-2">-2</label></td>
+    <td><label><input type="radio" name="judgment" value="-1">-1</label></td>
+    <td><label><input type="radio" name="judgment" value="0">0</label></td>
+    <td><label><input type="radio" name="judgment" value="1">1</label></td>
+    <td><label><input type="radio" name="judgment" value="2">2</label></td>
+    <td><label><input type="radio" name="judgment" value="3">3</label></td>
+    <td><label><input type="radio" name="judgment" value="4">4</label></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td>
+      <span class="bipolarvalence-instr">Pleasant feelings</span>
+    </td>
+  </tr>
+</table>
+
+  <table align="center"><tr>
+  <td align="center">
+  <button type="button" id="nextButton" onClick="showRating()">Next</button>
+         </td> 
+      <tr><td align="center">
+      <div id="testMessage"> </div>
+      </td></tr>
+
+ </table>
+ </div>
+
+
+<!-- The Arousal rating scale. -->
+<div id="arousal-content">
+<div align="center">
+  <h4><b>Please rate your feelings about the picture you just saw.</b></h4>
+  <br>
+  <h5>One extreme of the scale represents feeling stimulated, excited, frenzied, jittery, wide-awake, or aroused; 
+  <br>
+  <br>
+  and at the other end of the scale, you feel completely relaxed, calm, sluggish, dull, sleepy, or bored.</h5><br>
+</div>
+<table align = "center"><tr>
+<td align="center">
+  <tr>
+    <td>
+    <span class="arousal-instr">Calm</span>
+
+    </td>
+    <td> </td>
+    <td><label><input type="radio" name="judgment" value="0">0</label></td>
+    <td><label><input type="radio" name="judgment" value="1">1</label></td>
+    <td><label><input type="radio" name="judgment" value="2">2</label></td>
+    <td><label><input type="radio" name="judgment" value="3">3</label></td>
+    <td><label><input type="radio" name="judgment" value="4">4</label></td>
+    <td><label><input type="radio" name="judgment" value="5">5</label></td>
+    <td><label><input type="radio" name="judgment" value="6">6</label></td>
+    <td><label><input type="radio" name="judgment" value="7">7</label></td>
+    <td><label><input type="radio" name="judgment" value="8">8</label></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td>
+      <span class="arousal-instr">Aroused</span>
+    </td>
+  </tr>
+</table>
+
+  <table align="center"><tr>
+  <td align="center">
+  <button type="button" id="nextButton" onClick="showRating()">Next</button>
+         </td> 
+      <tr><td align="center">
+      <div id="testMessage"> </div>
+      </td></tr>
+
+ </table>
+ </div>
+
+
+<!-- The Unpleasant Unipolar Valence rating scale. -->
+<div id="unpleasant-content">
+<div align="center">
+  <h4><b>Please rate your feelings about the picture you just saw.</b></h4>
+  <br>
+  <h5>At one extreme of the scale, you feel completely unpleasant, unhappy, annoyed, unsatisfied, melancholic, or despaired. 
+  <br>
+  <br>
+  At the other end of the scale, you feel no unpleasant feelings.</h5><br>
+</div>
+<table align = "center"><tr>
+<td align="center">
+  <tr>
+    <td>
+    <span class="unpleasant-instr">No unpleasant feelings</span>
+
+    </td>
+    <td> </td>
+    <td><label><input type="radio" name="judgment" value="0">0</label></td>
+    <td><label><input type="radio" name="judgment" value="1">1</label></td>
+    <td><label><input type="radio" name="judgment" value="2">2</label></td>
+    <td><label><input type="radio" name="judgment" value="3">3</label></td>
+    <td><label><input type="radio" name="judgment" value="4">4</label></td>
+    <td><label><input type="radio" name="judgment" value="5">5</label></td>
+    <td><label><input type="radio" name="judgment" value="6">6</label></td>
+    <td><label><input type="radio" name="judgment" value="7">7</label></td>
+    <td><label><input type="radio" name="judgment" value="8">8</label></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td>
+      <span class="unpleasant-instr">Strong unpleasant feelings</span>
+    </td>
+  </tr>
+</table>
+
+  <table align="center"><tr>
+  <td align="center">
+  <button type="button" id="nextButton" onClick="showRating()">Next</button>
+         </td> 
+      <tr><td align="center">
+      <div id="testMessage"> </div>
+      </td></tr>
+
+ </table>
+ </div>
+
+
+<!-- The Pleasant Unipolar Valence rating scale. -->
+<div id="pleasant-content">
+<div align="center">
+  <h4><b>Please rate your feelings about the picture you just saw.</b></h4>
+  <br>
+  <h5>At one extreme of the scale, you feel completely pleased, happy, satisfied, content, or hopeful. 
+  <br>
+  <br>
+  At the other end of the scale, you feel no pleasant feelings.</h5><br>
+</div>
+<table align = "center"><tr>
+<td align="center">
+  <tr>
+    <td>
+    <span class="pleasant-instr">No pleasant feelings</span>
+
+    </td>
+    <td> </td>
+    <td><label><input type="radio" name="judgment" value="0">0</label></td>
+    <td><label><input type="radio" name="judgment" value="1">1</label></td>
+    <td><label><input type="radio" name="judgment" value="2">2</label></td>
+    <td><label><input type="radio" name="judgment" value="3">3</label></td>
+    <td><label><input type="radio" name="judgment" value="4">4</label></td>
+    <td><label><input type="radio" name="judgment" value="5">5</label></td>
+    <td><label><input type="radio" name="judgment" value="6">6</label></td>
+    <td><label><input type="radio" name="judgment" value="7">7</label></td>
+    <td><label><input type="radio" name="judgment" value="8">8</label></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td>
+      <span class="pleasant-instr">Strong pleasant feelings</span>
+    </td>
+  </tr>
+</table>
+
+  <table align="center"><tr>
+  <td align="center">
+  <button type="button" id="nextButton" onClick="showRating()">Next</button>
+         </td> 
+      <tr><td align="center">
+      <div id="testMessage"> </div>
+      </td></tr>
+
+ </table>
+ </div>
+
+</div>
+
+
+ <!-- The debriefing slide. -->
+<form id="demographics">
+ <div class="slide" id="debriefing">
+   <div class="question">
+     <p><b>What is your age?</b>
+       <label id="age-error" class="error" for="age">Please choose an option</label>
+      </p>
+      <select name="age" id="age" form="demographics" required>
+        <option value="">Choose an age</option>
+        <option value="0-19">&nbsp;0-19</option>
+        <option value="20-29">20-29</option>
+        <option value="30-39">30-39</option>
+        <option value="40-49">40-49</option>
+        <option value="50-59">50-59</option>
+        <option value="60-69">60-69</option>
+        <option value="70-79">70-79</option>
+        <option value="80-89">80-89</option>
+        <option value="&gt;90">90+</option>
+      </select>
+    </div>
+
+   <div class="question">
+     <p>
+       <b>What is your gender identity?</b>
+       <label id="gender-error" class="error" for="gender">Please choose an option</label>
+      </p>
+      <select name="gender" id="gender" form="demographics" required>
+        <option value="">Choose a gender</option>
+        <option value="female">Female</option>
+        <option value="female_to_male">Female to male transgender</option>
+        <option value="male">Male</option>
+        <option value="male_to_female">Male to female transgender</option>
+        <option value="not_sure">Not sure</option>
+        <option value="other">Other</option>
+        <option value="no_answer">Prefer not to answer</option>
+      </select>
+   </div>
+
+ <!-- TODO: Log time where they live? -->
+ <!-- TODO: Ask chronotype? -->
+
+   <div class="question">
+     <p><b>If you have any comment about the experiment, please write it here.</b></p>
+     <textarea type="textarea" id="expcomments" style="width:100%" name="expgen"></textarea>
+   </div>
+  
+  <div align="center">
+    <button type="submit" id="debriefsubmit">Submit</button>
+  </div>
+</form>
+
+</div>
+
+<!-- The finished slide. -->
+<div class="slide" id="finished">
+  <p class="block-text">
+  Thank you for participating in the study replicating "How Are You Feeling? Revisiting the Quantification of Emotional Qualia"! The purpose of the study is to understand how people report on their feelings of positive and negative emotion and emotional arousal. In this study, we asked participants to rate how pleasant, unpleasant, or emotionally arousing they judged pictures to be. We expect to find that asking about emotional responses to pictures using two unipolar scales of pleasant and unpleasant affect will capture more information about positive and negative emotion and emotional arousal than the scale measuring pleasant and unpleasant emotion along a single scale. If you would like to learn more about this topic we are happy to provide references.
+  </p>
+</div>
+
+<script src="kron-affect-rating.js"></script>
+
+<!-- preload IAPS images -->
+<div style="width:0;height:0;overflow:hidden">
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1052.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1200.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1303.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1450.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1460.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1540.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1645.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1661.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1710.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1931.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2091.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2190.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2205.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2210.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2300.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2304.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2347.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2352.2.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2358.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2530.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2580.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2590.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2595.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2682.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2688.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2770.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2900.1.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3000.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3053.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3063.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3180.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3185.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4225.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4274.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4490.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4574.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4624.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4643.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4649.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4664.1.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4750.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4810.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5000.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5534.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5760.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5830.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5973.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/6263.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/6550.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/6562.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7046.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7078.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7175.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7234.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7440.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7476.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7545.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8065.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8160.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8185.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8190.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8200.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8311.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8312.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8400.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8475.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8540.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9000.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9332.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9412.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9471.jpg" />
+  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9594.jpg" />
+<!-- practice IAPS pics: -->
+<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5010.jpg" />
+<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4005.jpg" />
+<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1820.jpg" />
+<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2320.jpg" />
+
+</div>
+
+</body>
+</html>
