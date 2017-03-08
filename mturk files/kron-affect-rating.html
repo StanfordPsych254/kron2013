@@ -39,7 +39,7 @@
   <br>Note: You won't be able to preview this HIT before accepting it because it's so short. </b></p>
 
     <p class="block-text">
-  Some of the pictures you view may be of a graphic nature or may cause intense emotional responses. You must be at least 18 years old to participate.
+  Some of the pictures you view may be of a graphic nature and may evoke intense emotional responses. You must be at least 18 years old to participate.
   </p>
   
   <p class="block-text" id="legal">By answering the
@@ -75,7 +75,7 @@
 <div class="slide" id="instructions3">
   <p class="block-text">Now that you've had a chance to practice, please begin the task.
   </p>
-  <button type="button" onclick="this.blur(); experiment.next()">Start</button>
+  <button type="button" onclick="this.blur(); experiment.next(); subtractPosition()">Start</button>
 </div>
 
 <!-- The stage slide -->
@@ -328,8 +328,22 @@
       </select>
    </div>
 
- <!-- TODO: Log time where they live? -->
- <!-- TODO: Ask chronotype? -->
+    <div class="question">
+     <p>
+       <b>Do you consider yourself a "morning person" or an "evening person"?</b>
+       <label id="chronotype-error" class="error" for="chronotype">Please choose an option</label>
+      </p>
+      <select name="chronotype" id="chronotype" form="demographics" required>
+        <option value="">Choose an option</option>
+        <option value="female">Very much a "morning person"</option>
+        <option value="female_to_male">Somewhat a "morning person"</option>
+        <option value="male">Neither</option>
+        <option value="male_to_female">Somewhat an "evening person"</option>
+        <option value="not_sure">Very much an "evening person"</option>
+        <option value="other">Other</option>
+        <option value="no_answer">Prefer not to answer</option>
+      </select>
+    </div>
 
    <div class="question">
      <p><b>If you have any comment about the experiment, please write it here.</b></p>
@@ -337,7 +351,7 @@
    </div>
   
   <div align="center">
-    <button type="submit" id="debriefsubmit">Submit</button>
+    <button type="submit" id="debriefsubmit" onClick="experiment.end()">Submit</button>
   </div>
 </form>
 

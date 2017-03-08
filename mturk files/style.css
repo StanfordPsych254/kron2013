@@ -97,9 +97,6 @@ button[disabled] {
 }
 
 #stage-content img{
-  /*width:100% !important;
-  height:100% !important;*/
-  width: auto !important;
   height: 85% !important;
   display:block;}
 
