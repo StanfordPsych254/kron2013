@@ -166,37 +166,28 @@ var subtractPosition = function() {
 var countPosition = function() {
   // Count part_of_trial: 0 = picture, 1 = 1st rating scale, 2 = 2nd rating scale
   if (part_of_trial == 2) {  // if 2nd rating has been completed, start at top of next trial
-    part_of_trial = 0
+    trial = trial+1;  // increment trial
+    part_of_trial = 0 // reset part of trial
   } else {
-    part_of_trial = part_of_trial+1
+    part_of_trial = part_of_trial+1 // otherwise go on to next part of trial
   }
 
-  // Count trial number
-  if (part_of_trial == 2) {
-    trial = trial+1;  // first 4 trials are practice 
+  // Count subblock number (1:4) within subblock
+  // skipping ahead of first 4 practice trials, if 6th trial in subblock, subblock ends
+  if (trial !== 1 && (trial-4)%6 == 1) { // If on trial 5, 11, etc. 
+    new_subblock = true; //set as new subblock
+    subblock = subblock+1; // increment sublock
+  } else {
+    new_subblock = false;
   }
 
-  // Count subblocks and blocks from start of experiment (i.e. trials - 4)
-  if (is_practice == false) { 
-
-    // Count subblock number (1:4) within subblock
-    // skipping ahead of first 4 practice trials, if 6th trial in subblock, subblock ends
-    if (trial !== 1 && (trial-4)%6 == 1) { 
-      var new_subblock = true;
-      subblock = subblock+1;
-    } 
-    if ((trial-4)%6 !== 0) {
-      var new_subblock = false;
-    }
-
-    // Count block number (1:3) within experiment
-    if (subblock == 4 && new_subblock == true) {
-      new_block == true
-      block = block+1;
-    } 
-    else {
-      new_block = false
-    }
+  // Count block number (1:3) within experiment
+  if (subblock == 4 && new_subblock == true) {
+    new_block == true
+    block = block+1;
+  } 
+  else {
+    new_block = false
   }
 }
 
@@ -379,8 +370,8 @@ var trial = 1;
 var subblock = 1;
 var block = 1;
 var part_of_trial = 0; // make sure this updates!
-var new_subblock = [];
-var new_block = [];
+var new_subblock;
+var new_block;
 var iaps_trial;
 var scale_content;
 
@@ -395,9 +386,9 @@ showSlide("instructions");
 var is_practice = false;
 
 var practice_iaps = [
-// 5010,
-// 4005,
-// 1820,
+5010,
+4005,
+1820,
 2320
 ];
 
@@ -439,7 +430,7 @@ var experiment = {
       iaps_trial: [],
       rating: [],
       elapsed_ms: [],
-      //browser checks
+      //browser checksend
       window_width: [],
       window_height: [],
       checkmobile: [],
@@ -532,46 +523,45 @@ var experiment = {
             // select from our scales array and stop exp after we've exhausted all the domains
             iaps_trial = practice_iaps.shift();
 
-            // Display the picture stimuli
-            var iaps_filename = getiapsFile(iaps_trial);
-            $("#iaps").attr('src', iaps_filename);
-
-            // push all relevant variables into data object
-            experiment.data.window_width.push($(window).width());
-            experiment.data.window_height.push($(window).height());
-
-            //display slides:
-            showSlide("stage");
-            $("#bipolarvalence-content").hide();
-            $("#arousal-content").hide();
-            $("#pleasant-content").hide();
-            $("#unpleasant-content").hide();
-            $("#stage-content").hide();
-
-            // 3 s ISI - no between-block ISI
-            window.setTimeout(function() {
-              $("#blank-content").show();
-            });
-
-            window.setTimeout(function() {
-              $("#stage-content").show();
-              experiment.start_ms = Date.now();
-            }, 3000);
-
-            window.setTimeout(function() {
-              $("#stage-content").hide();
-            }, 9000);
-
-            window.setTimeout(function() {
-              showRating()
-            }, 9000);
-
-            // end of practice trials
+            // end of practice trials  if undefined
             if (typeof iaps_trial == "undefined") {
               showSlide("instructions3") 
               is_practice = false 
-            }
+            } else { // otherwise go on to trials
+              // Display the picture stimuli
+              var iaps_filename = getiapsFile(iaps_trial);
+              $("#iaps").attr('src', iaps_filename);
 
+              // push all relevant variables into data object
+              experiment.data.window_width.push($(window).width());
+              experiment.data.window_height.push($(window).height());
+
+              //display slides:
+              showSlide("stage");
+              $("#bipolarvalence-content").hide();
+              $("#arousal-content").hide();
+              $("#pleasant-content").hide();
+              $("#unpleasant-content").hide();
+              $("#stage-content").hide();
+
+              // 3 s ISI - no between-block ISI
+              window.setTimeout(function() {
+                $("#blank-content").show();
+              });
+
+              window.setTimeout(function() {
+                $("#stage-content").show();
+                experiment.start_ms = Date.now();
+              }, 300);
+
+              window.setTimeout(function() {
+                $("#stage-content").hide();
+              }, 900);
+
+              window.setTimeout(function() {
+                showRating()
+              }, 900);
+            }
           } 
           // experimental trials
           else { 
@@ -610,15 +600,15 @@ var experiment = {
             window.setTimeout(function() {
               $("#stage-content").show();
               experiment.start_ms = Date.now();
-            }, 3000);
+            }, 300);
 
             window.setTimeout(function() {
               $("#stage-content").hide();
-            }, 9000);
+            }, 900);
 
             window.setTimeout(function() {
               showRating()
-            }, 9000);
+            }, 900);
           }  
       }
     },
