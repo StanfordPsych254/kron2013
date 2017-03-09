@@ -374,6 +374,7 @@ var new_subblock;
 var new_block;
 var iaps_trial;
 var scale_content;
+var iaps_order;
 
 var date = new Date();
 // ############################## Instructions ##################################
@@ -423,6 +424,7 @@ var experiment = {
       part_of_trial: [],
       trial: [],
       subblock: [],
+      subblock_order: [],
       block: [],
       new_subblock: [],
       new_block: [],
@@ -450,9 +452,6 @@ var experiment = {
     // end the experiment
     end: function() {
       showSlide("finished");
-      setTimeout(function() {
-        turk.submit(experiment.data)
-      }, 1500);
     },
 
     // LOG RESPONSE
@@ -616,41 +615,41 @@ var experiment = {
     //  go to debriefing slide
     debriefing: function() {
       showSlide("debriefing");
-      setTimeout(function() {
-      $("#debriefing").show();
-      }, 8000);
     },
 
     // submitcomments function
     submit_comments: function() {
-      var races = document.getElementsByName("race[]");
-      for (i = 0; i < races.length; i++) {
-        if (races[i].checked) {
-          experiment.data.race.push(races[i].value);
-        }
-      }
-
-      // Save subblock order and iaps order
-      experiment.data.subblock_order.push(subblock_order);
-      experiment.data.iaps_order.push(iaps_order);
-      // Save mobile check
-      experiment.data.checkmobile.push(checkmobile);
+      // var races = document.getElementsByName("race[]");
+      // for (i = 0; i < races.length; i++) {
+      //   if (races[i].checked) {
+      //     experiment.data.race.push(races[i].value);
+      //   }
+      // }
       // Save ending questions
       experiment.data.age.push(document.getElementById("age").value);
       experiment.data.gender.push(document.getElementById("gender").value);
-      experiment.data.education.push(document.getElementById("education").value);
       experiment.data.chronotype.push(document.getElementById("chronotype").value);
-      experiment.data.expt_aim.push(document.getElementById("expthoughts").value);
-      experiment.data.expt_gen.push(document.getElementById("expcomments").value);
-      experiment.data.type.push(type);
-      experiment.data.user_agent.push(window.navigator.userAgent);
-      // Save date
-      experiment.data.date.push(date);
+      // experiment.data.education.push(document.getElementById("education").value);
+      //experiment.data.expt_aim.push(document.getElementById("expthoughts").value);
+      //experiment.data.expt_gen.push(document.getElementById("expcomments").value);
+      //experiment.data.type.push(type);
+
 
       // End experiment
       experiment.end();
     }
 }
+
+// Everything we save before experiment starts
+//Save subblock order and iaps order
+experiment.data.subblock_order.push(subblock_order);
+experiment.data.iaps_order.push(iaps_order);
+// Save mobile check
+experiment.data.checkmobile.push(checkmobile);
+// Save window data
+experiment.data.user_agent.push(window.navigator.userAgent);
+// Save date
+experiment.data.date.push(date);
 
 $(function() {
   $('form#demographics').validate({
@@ -658,21 +657,23 @@ $(function() {
       "age": "required",
       "gender": "required",
       "education": "required",
-      "race[]": "required",
+      //"race[]": "required",
     },
     messages: {
       "age": "Please choose an option",
       "gender": "Please choose an option",
       "education": "Please choose an option",
     },
-    submitHandler: experiment.submit_comments
+    submitHandler: function(form) {
+      experiment.submit_comments()
+    }
   });
-  $('#race_group input[value=no_answer]').click(function() {
-    $('#race_group input').not('input[value=no_answer]').attr('checked', false);
-  });
-  $('#race_group input').not('input[value=no_answer]').click(function() {
-    $('#race_group input[value=no_answer]').attr('checked', false);
-  });
+  // $('#race_group input[value=no_answer]').click(function() {
+  //   $('#race_group input').not('input[value=no_answer]').attr('checked', false);
+  // });
+  // $('#race_group input').not('input[value=no_answer]').click(function() {
+  //   $('#race_group input[value=no_answer]').attr('checked', false);
+  // });
 });
 
 
