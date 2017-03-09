@@ -174,7 +174,7 @@ var countPosition = function() {
 
   // Count subblock number (1:4) within subblock
   // skipping ahead of first 4 practice trials, if 6th trial in subblock, subblock ends
-  if (trial !== 1 && (trial-4)%6 == 1) { // If on trial 5, 11, etc. 
+  if (trial !== 1 && (trial-4)%6 == 1 && part_of_trial == 1) { // If on trial 5, 11, etc. 
     new_subblock = true; //set as new subblock
     subblock = subblock+1; // increment sublock
   } else {
