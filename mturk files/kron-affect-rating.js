@@ -1,9 +1,6 @@
 // 3/6/17: Outstanding issues to fix:
 // create pseudorandom order of trials within subblocks, then randomize order of subblocks
 // optional: enter normative IAPS ratings so data is easier to deal with
-// finished function is timing out too quickly
-// stop it from counting position in the instructions3 (begin) slide
-
 
 // ################################ Overview #####################################
 
@@ -93,69 +90,140 @@ var showRating = function() {
     experiment.next()
   }
 
-  if (scale_type[subblock] == "bipolar" && scale_order == "AB" && part_of_trial == 1) {
-    $('#bipolarvalence-content').show()
-    $('#arousal-content').hide()
-    $('#pleasant-content').hide()
-    $('#unpleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "bipolarvalence";
+  //practice trials
+  if (is_practice == true) {
+     if (scale_type[trial] == "bipolar" && scale_order == "AB" && part_of_trial == 1) {
+      $('#bipolarvalence-content').show()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "bipolarvalence";
+    }
+    if (scale_type[trial-1] == "bipolar" && scale_order == "AB" && part_of_trial == 2) {
+      $('#arousal-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "arousal";
+    }
+    if (scale_type[trial-1] == "bipolar" && scale_order == "BA" && part_of_trial == 1) {
+      $('#arousal-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "arousal";
+    }
+    if (scale_type[trial-1] == "bipolar" && scale_order == "BA" && part_of_trial == 2) {
+      $('#bipolarvalence-content').show()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "bipolarvalence";
+    }
+    if (scale_type[trial-1] == "unipolar" && scale_order == "AB" && part_of_trial == 1) {
+      $('#pleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "pleasant";
+    }
+    if (scale_type[trial-1] == "unipolar" && scale_order == "AB" && part_of_trial == 2) {
+      $('#unpleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "unpleasant";
+    }
+    if (scale_type[trial-1] == "unipolar" && scale_order == "BA" && part_of_trial == 1) {
+      $('#unpleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "unpleasant";
+    } 
+    if (scale_type[trial-1] == "unipolar" && scale_order == "BA" && part_of_trial == 2) {
+      $('#pleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "pleasant";
+    } 
   }
-  if (scale_type[subblock] == "bipolar" && scale_order == "AB" && part_of_trial == 2) {
-    $('#arousal-content').show()
-    $('#bipolarvalence-content').hide()
-    $('#pleasant-content').hide()
-    $('#unpleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "arousal";
-  }
-  if (scale_type[subblock] == "bipolar" && scale_order == "BA" && part_of_trial == 1) {
-    $('#arousal-content').show()
-    $('#bipolarvalence-content').hide()
-    $('#pleasant-content').hide()
-    $('#unpleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "arousal";
-  }
-  if (scale_type[subblock] == "bipolar" && scale_order == "BA" && part_of_trial == 2) {
-    $('#bipolarvalence-content').show()
-    $('#arousal-content').hide()
-    $('#pleasant-content').hide()
-    $('#unpleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "bipolarvalence";
-  }
-  if (scale_type[subblock] == "unipolar" && scale_order == "AB" && part_of_trial == 1) {
-    $('#pleasant-content').show()
-    $('#bipolarvalence-content').hide()
-    $('#arousal-content').hide()
-    $('#unpleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "pleasant";
-  }
-  if (scale_type[subblock] == "unipolar" && scale_order == "AB" && part_of_trial == 2) {
-    $('#unpleasant-content').show()
-    $('#bipolarvalence-content').hide()
-    $('#arousal-content').hide()
-    $('#pleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "unpleasant";
-  }
-  if (scale_type[subblock] == "unipolar" && scale_order == "BA" && part_of_trial == 1) {
-    $('#unpleasant-content').show()
-    $('#bipolarvalence-content').hide()
-    $('#arousal-content').hide()
-    $('#pleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "unpleasant";
-  } 
-  if (scale_type[subblock] == "unipolar" && scale_order == "BA" && part_of_trial == 2) {
-    $('#pleasant-content').show()
-    $('#bipolarvalence-content').hide()
-    $('#arousal-content').hide()
-    $('#unpleasant-content').hide()
-    $("#nomobile-content-content").hide();
-    scale_content = "pleasant";
+
+  //experimental trials
+  else {
+    if (scale_type[subblock-1] == "bipolar" && scale_order == "AB" && part_of_trial == 1) {
+      $('#bipolarvalence-content').show()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "bipolarvalence";
+    }
+    if (scale_type[subblock-1] == "bipolar" && scale_order == "AB" && part_of_trial == 2) {
+      $('#arousal-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "arousal";
+    }
+    if (scale_type[subblock-1] == "bipolar" && scale_order == "BA" && part_of_trial == 1) {
+      $('#arousal-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "arousal";
+    }
+    if (scale_type[subblock-1] == "bipolar" && scale_order == "BA" && part_of_trial == 2) {
+      $('#bipolarvalence-content').show()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "bipolarvalence";
+    }
+    if (scale_type[subblock-1] == "unipolar" && scale_order == "AB" && part_of_trial == 1) {
+      $('#pleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "pleasant";
+    }
+    if (scale_type[subblock-1] == "unipolar" && scale_order == "AB" && part_of_trial == 2) {
+      $('#unpleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "unpleasant";
+    }
+    if (scale_type[subblock-1] == "unipolar" && scale_order == "BA" && part_of_trial == 1) {
+      $('#unpleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#pleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "unpleasant";
+    } 
+    if (scale_type[subblock-1] == "unipolar" && scale_order == "BA" && part_of_trial == 2) {
+      $('#pleasant-content').show()
+      $('#bipolarvalence-content').hide()
+      $('#arousal-content').hide()
+      $('#unpleasant-content').hide()
+      $("#nomobile-content-content").hide();
+      scale_content = "pleasant";
+    }
   } 
 }
 
@@ -195,20 +263,20 @@ var countPosition = function() {
 
 // Set IAPS stimuli
 var iaps = [
-// 1052,1200,1303,1450,1460, //5
-// 1540,1645,1661,1710,1931, //10
-// 2091,2190,2205,2210,2300, //15
-// 2304,2347,2352.2,2358,2530, //20
-// 2580,2590,2595,2682,2688, //25
-// 2770,2900.1,3000,3053,3063, //30
-// 3180,3185,4225,4274,4490, //35
-// 4574,4624,4643,4649,4664.1, //40
-// 4750,4810,5000,5534,5760, //45
-// 5830,5973,6263,6550,6562, //50
-// 7046,7078,7175,7234,7440, //55
-// 7476,7545,8065,8160,8185, //60
-// 8190,8200,8311,8312,8400, //65
- 8475,8540,9000,9332,9412, //70
+1052,1200,1303,1450,1460, //5
+1540,1645,1661,1710,1931, //10
+2091,2190,2205,2210,2300, //15
+2304,2347,2352.2,2358,2530, //20
+2580,2590,2595,2682,2688, //25
+2770,2900.1,3000,3053,3063, //30
+3180,3185,4225,4274,4490, //35
+4574,4624,4643,4649,4664.1, //40
+4750,4810,5000,5534,5760, //45
+5830,5973,6263,6550,6562, //50
+7046,7078,7175,7234,7440, //55
+7476,7545,8065,8160,8185, //60
+8190,8200,8311,8312,8400, //65
+8475,8540,9000,9332,9412, //70
 9471,9594 //72
 ];
 
@@ -228,142 +296,152 @@ if (order >= 0.5) {
 
 // Initialize presentation order (randomly out of 8 possible counterbalanced orders)
 var present_order = Math.floor(Math.random() * (8)) + 1;
-if (present_order == 1) {
+
+if (is_practice == true) {
   var scale_type = [
     'bipolar',
-    'unipolar',
     'bipolar',
     'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
     'unipolar'];
-  var subblock_order = [1,2,3,4];
-  var iaps_order = shuffle(iaps);
-} 
-if (present_order == 2) {
-  var scale_type = [
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar'];
-  var subblock_order = [3,1,4,2];
-  var iaps_order = shuffle(iaps);
-} 
-if (present_order == 3) {
-  var scale_type = [
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar'];
-  var subblock_order = [2,4,1,3];
-  var iaps_order = shuffle(iaps);
 }
-if (present_order == 4) {
-  var scale_type = [
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar'];
-  var subblock_order = [4,3,2,1];
-  var iaps_order = shuffle(iaps);
-} 
-if (present_order == 5) {
-  var scale_type = [
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar'];
-  var subblock_order = [4,3,2,1];
-  var iaps_order = shuffle(iaps);
-} 
-if (present_order == 6) {
-  var scale_type = [
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar'];
-  var subblock_order = [2,4,1,3];
-  var iaps_order = shuffle(iaps);
-} 
-if (present_order == 7) {
-  var scale_type = [
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar'];
-  var subblock_order = [3,1,4,2];
-  var iaps_order = shuffle(iaps);
-} 
-if (present_order == 8) {
-  var scale_type = [
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar',
-    'unipolar',
-    'bipolar'];
-  var subblock_order = [1,2,3,4];
-  var iaps_order = shuffle(iaps);
-} 
+else {
+  if (present_order == 1) {
+    var scale_type = [
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar'];
+    var subblock_order = [1,2,3,4];
+    var iaps_order = shuffle(iaps);
+  } 
+  if (present_order == 2) {
+    var scale_type = [
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar'];
+    var subblock_order = [3,1,4,2];
+    var iaps_order = shuffle(iaps);
+  } 
+  if (present_order == 3) {
+    var scale_type = [
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar'];
+    var subblock_order = [2,4,1,3];
+    var iaps_order = shuffle(iaps);
+  }
+  if (present_order == 4) {
+    var scale_type = [
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar'];
+    var subblock_order = [4,3,2,1];
+    var iaps_order = shuffle(iaps);
+  } 
+  if (present_order == 5) {
+    var scale_type = [
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar'];
+    var subblock_order = [4,3,2,1];
+    var iaps_order = shuffle(iaps);
+  } 
+  if (present_order == 6) {
+    var scale_type = [
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar'];
+    var subblock_order = [2,4,1,3];
+    var iaps_order = shuffle(iaps);
+  } 
+  if (present_order == 7) {
+    var scale_type = [
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar'];
+    var subblock_order = [3,1,4,2];
+    var iaps_order = shuffle(iaps);
+  } 
+  if (present_order == 8) {
+    var scale_type = [
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar',
+      'unipolar',
+      'bipolar'];
+    var subblock_order = [1,2,3,4];
+    var iaps_order = shuffle(iaps);
+  } 
+}
 
 // Set counts for trial, subblock, block, and part_of_trial
 var trial = 1;
@@ -374,6 +452,7 @@ var new_subblock;
 var new_block;
 var iaps_trial;
 var scale_content;
+var scale_type;
 var iaps_order;
 
 var date = new Date();
@@ -398,12 +477,6 @@ var totalpracticeTrials = practice_iaps.length;
 var practice = function() {
 
   is_practice = true;
-
-  var scale_type = [
-    'bipolar',
-    'bipolar',
-    'unipolar',
-    'unipolar'];
 
   experiment.next();
 }
@@ -475,7 +548,11 @@ var experiment = {
           experiment.data.part_of_trial.push(part_of_trial);
 
           // Push the trial info
-          experiment.data.scale_type.push(scale_type[subblock]);
+          if (is_practice == true) {
+            experiment.data.scale_type.push(scale_type[trial]);
+          } else {
+            experiment.data.scale_type.push(scale_type[subblock]);
+          }
           experiment.data.scale_order.push(scale_order);
           experiment.data.iaps_trial.push(iaps_trial);
 
@@ -551,15 +628,15 @@ var experiment = {
               window.setTimeout(function() {
                 $("#stage-content").show();
                 experiment.start_ms = Date.now();
-              }, 300);
+              }, 3000);
 
               window.setTimeout(function() {
                 $("#stage-content").hide();
-              }, 900);
+              }, 9000);
 
               window.setTimeout(function() {
                 showRating()
-              }, 900);
+              }, 9000);
             }
           } 
           // experimental trials
@@ -599,15 +676,15 @@ var experiment = {
             window.setTimeout(function() {
               $("#stage-content").show();
               experiment.start_ms = Date.now();
-            }, 300);
+            }, 3000);
 
             window.setTimeout(function() {
               $("#stage-content").hide();
-            }, 900);
+            }, 9000);
 
             window.setTimeout(function() {
               showRating()
-            }, 900);
+            }, 9000);
           }  
       }
     },
