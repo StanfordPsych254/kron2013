@@ -75,7 +75,7 @@
 <div class="slide" id="instructions3">
   <p class="block-text">Now that you've had a chance to practice, please begin the task.
   </p>
-  <button type="button" onclick="this.blur(); experiment.next(); subtractPosition()">Start</button>
+  <button type="button" onclick="this.blur(); experiment.next();">Start</button>
 </div>
 
 <!-- The stage slide -->
@@ -335,11 +335,11 @@
       </p>
       <select name="chronotype" id="chronotype" form="demographics" required>
         <option value="">Choose an option</option>
-        <option value="female">Very much a "morning person"</option>
-        <option value="female_to_male">Somewhat a "morning person"</option>
-        <option value="male">Neither</option>
-        <option value="male_to_female">Somewhat an "evening person"</option>
-        <option value="not_sure">Very much an "evening person"</option>
+        <option value="1">Very much a "morning person"</option>
+        <option value="2">Somewhat a "morning person"</option>
+        <option value="3">Neither</option>
+        <option value="4">Somewhat an "evening person"</option>
+        <option value="5">Very much an "evening person"</option>
         <option value="other">Other</option>
         <option value="no_answer">Prefer not to answer</option>
       </select>
@@ -351,7 +351,7 @@
    </div>
   
   <div align="center">
-    <button type="submit" id="debriefsubmit" onClick="experiment.end()">Submit</button>
+    <button type="submit" id="debriefsubmit">Submit</button>
   </div>
 </form>
 
@@ -362,6 +362,9 @@
   <p class="block-text">
   Thank you for participating in the study replicating "How Are You Feeling? Revisiting the Quantification of Emotional Qualia"! The purpose of the study is to understand how people report on their feelings of positive and negative emotion and emotional arousal. In this study, we asked participants to rate how pleasant, unpleasant, or emotionally arousing they judged pictures to be. We expect to find that asking about emotional responses to pictures using two unipolar scales of pleasant and unpleasant affect will capture more information about positive and negative emotion and emotional arousal than the scale measuring pleasant and unpleasant emotion along a single scale. If you would like to learn more about this topic we are happy to provide references.
   </p>
+  <button type="button" onclick="this.blur(); turk.submit(experiment.data);">Finish</button>
+
+
 </div>
 
 <script src="kron-affect-rating.js"></script>
