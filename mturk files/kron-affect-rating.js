@@ -92,12 +92,12 @@ var showRating = function() {
 
   //practice trials
   if (is_practice == true) {
-     if (scale_type[trial] == "bipolar" && scale_order == "AB" && part_of_trial == 1) {
+     if (scale_type[trial-1] == "bipolar" && scale_order == "AB" && part_of_trial == 1) {
       $('#bipolarvalence-content').show()
       $('#arousal-content').hide()
       $('#pleasant-content').hide()
       $('#unpleasant-content').hide()
-      $("#nomobile-content-content").hide();
+      //$("#nomobile-content-content").hide();
       scale_content = "bipolarvalence";
     }
     if (scale_type[trial-1] == "bipolar" && scale_order == "AB" && part_of_trial == 2) {
@@ -297,16 +297,15 @@ if (order >= 0.5) {
 // Initialize presentation order (randomly out of 8 possible counterbalanced orders)
 var present_order = Math.floor(Math.random() * (8)) + 1;
 
-if (is_practice == true) {
-  var scale_type = [
-    'bipolar',
-    'bipolar',
-    'unipolar',
-    'unipolar'];
-}
-else {
+var scale_type = [
+  'bipolar',
+  'bipolar',
+  'unipolar',
+  'unipolar'];
+
+var setScaleType = function() {
   if (present_order == 1) {
-    var scale_type = [
+    scale_type = [
       'bipolar',
       'unipolar',
       'bipolar',
@@ -319,11 +318,11 @@ else {
       'unipolar',
       'bipolar',
       'unipolar'];
-    var subblock_order = [1,2,3,4];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [1,2,3,4];
+    iaps_order = shuffle(iaps);
   } 
   if (present_order == 2) {
-    var scale_type = [
+    scale_type = [
       'bipolar',
       'unipolar',
       'bipolar',
@@ -336,11 +335,11 @@ else {
       'bipolar',
       'unipolar',
       'bipolar'];
-    var subblock_order = [3,1,4,2];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [3,1,4,2];
+    iaps_order = shuffle(iaps);
   } 
   if (present_order == 3) {
-    var scale_type = [
+    scale_type = [
       'bipolar',
       'unipolar',
       'bipolar',
@@ -353,11 +352,11 @@ else {
       'unipolar',
       'bipolar',
       'unipolar'];
-    var subblock_order = [2,4,1,3];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [2,4,1,3];
+    iaps_order = shuffle(iaps);
   }
   if (present_order == 4) {
-    var scale_type = [
+    scale_type = [
       'unipolar',
       'bipolar',
       'unipolar',
@@ -370,11 +369,11 @@ else {
       'unipolar',
       'bipolar',
       'unipolar'];
-    var subblock_order = [4,3,2,1];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [4,3,2,1];
+    iaps_order = shuffle(iaps);
   } 
   if (present_order == 5) {
-    var scale_type = [
+    scale_type = [
       'bipolar',
       'unipolar',
       'bipolar',
@@ -387,11 +386,11 @@ else {
       'bipolar',
       'unipolar',
       'bipolar'];
-    var subblock_order = [4,3,2,1];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [4,3,2,1];
+    iaps_order = shuffle(iaps);
   } 
   if (present_order == 6) {
-    var scale_type = [
+    scale_type = [
       'unipolar',
       'bipolar',
       'unipolar',
@@ -404,11 +403,11 @@ else {
       'bipolar',
       'unipolar',
       'bipolar'];
-    var subblock_order = [2,4,1,3];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [2,4,1,3];
+    iaps_order = shuffle(iaps);
   } 
   if (present_order == 7) {
-    var scale_type = [
+    scale_type = [
       'unipolar',
       'bipolar',
       'unipolar',
@@ -421,11 +420,11 @@ else {
       'unipolar',
       'bipolar',
       'unipolar'];
-    var subblock_order = [3,1,4,2];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [3,1,4,2];
+    iaps_order = shuffle(iaps);
   } 
   if (present_order == 8) {
-    var scale_type = [
+    scale_type = [
       'unipolar',
       'bipolar',
       'unipolar',
@@ -438,8 +437,8 @@ else {
       'bipolar',
       'unipolar',
       'bipolar'];
-    var subblock_order = [1,2,3,4];
-    var iaps_order = shuffle(iaps);
+    subblock_order = [1,2,3,4];
+    iaps_order = shuffle(iaps);
   } 
 }
 
@@ -454,6 +453,7 @@ var iaps_trial;
 var scale_content;
 var scale_type;
 var iaps_order;
+var subblock_order;
 
 var date = new Date();
 // ############################## Instructions ##################################
@@ -588,8 +588,8 @@ var experiment = {
     next: function() {      
       // Allow experiment to start if it's a turk worker OR if it's a test run
       if (window.self == window.top | turk.workerId.length > 0) {
-          $("#prog").attr("style","width:" +
-              String(100 * (1 - iaps_order.length/totalTrials)) + "%")
+          // $("#prog").attr("style","width:" +
+          //     String(100 * (1 - iaps_order.length/totalTrials)) + "%")
           // style="width:progressTotal%"
 
           // practice trials
@@ -601,8 +601,9 @@ var experiment = {
 
             // end of practice trials  if undefined
             if (typeof iaps_trial == "undefined") {
-              showSlide("instructions3") 
-              is_practice = false 
+              showSlide("instructions3");
+              is_practice = false;
+              setScaleType();
             } else { // otherwise go on to trials
               // Display the picture stimuli
               var iaps_filename = getiapsFile(iaps_trial);
@@ -628,15 +629,15 @@ var experiment = {
               window.setTimeout(function() {
                 $("#stage-content").show();
                 experiment.start_ms = Date.now();
-              }, 3000);
+              }, 300);
 
               window.setTimeout(function() {
                 $("#stage-content").hide();
-              }, 9000);
+              }, 900);
 
               window.setTimeout(function() {
-                showRating()
-              }, 9000);
+                showRating();
+              }, 900);
             }
           } 
           // experimental trials
@@ -676,15 +677,15 @@ var experiment = {
             window.setTimeout(function() {
               $("#stage-content").show();
               experiment.start_ms = Date.now();
-            }, 3000);
+            }, 300);
 
             window.setTimeout(function() {
               $("#stage-content").hide();
-            }, 9000);
+            }, 900);
 
             window.setTimeout(function() {
               showRating()
-            }, 9000);
+            }, 900);
           }  
       }
     },
