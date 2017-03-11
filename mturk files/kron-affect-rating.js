@@ -73,6 +73,16 @@ $.urlParam = function(name){
   }
 }
 
+// concatenate arrays: from http://stackoverflow.com/questions/5080028/what-is-the-most-efficient-way-to-concatenate-n-arrays-in-javascript
+function concatNarrays(args) {
+    args = Array.prototype.slice.call(arguments);
+    var newArr = args.reduce( function(prev, next) {
+       return prev.concat(next) ;
+    });
+
+    return newArr;
+}
+
 //Check if using a mobile device
   //from: http://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device-in-jquery
 var checkmobile = false;
@@ -227,10 +237,6 @@ var showRating = function() {
   } 
 }
 
-var subtractPosition = function() {
-  part_of_trial = -1;
-}
-
 var countPosition = function() {
   // Count part_of_trial: 0 = picture, 1 = 1st rating scale, 2 = 2nd rating scale
   if (part_of_trial == 2) {  // if 2nd rating has been completed, start at top of next trial
@@ -243,219 +249,151 @@ var countPosition = function() {
   // Count subblock number (1:4) within subblock
   // skipping ahead of first 4 practice trials, if 6th trial in subblock, subblock ends
   if (trial !== 1 && (trial-4)%6 == 1 && part_of_trial == 1) { // If on trial 5, 11, etc. 
-    new_subblock = true; //set as new subblock
     subblock = subblock+1; // increment sublock
-  } else {
-    new_subblock = false;
-  }
-
-  // Count block number (1:3) within experiment
-  if (subblock == 4 && new_subblock == true) {
-    new_block == true
-    block = block+1;
-  } 
-  else {
-    new_block = false
   }
 }
 
 // ############################## Configuration settings ##############################
 
 // Set IAPS stimuli
-var iaps = [
-1052,1200,1303,1450,1460, //5
-1540,1645,1661,1710,1931, //10
-2091,2190,2205,2210,2300, //15
-2304,2347,2352.2,2358,2530, //20
-2580,2590,2595,2682,2688, //25
-2770,2900.1,3000,3053,3063, //30
-3180,3185,4225,4274,4490, //35
-4574,4624,4643,4649,4664.1, //40
-4750,4810,5000,5534,5760, //45
-5830,5973,6263,6550,6562, //50
-7046,7078,7175,7234,7440, //55
-7476,7545,8065,8160,8185, //60
-8190,8200,8311,8312,8400, //65
-8475,8540,9000,9332,9412, //70
-9471,9594 //72
-];
 
-var totalTrials = iaps.length;
+  //block 1
+var iaps_block1_subblock1 = [
+1540,4643,8475,6562,2358,2900.1]; //6
+var iaps_block1_subblock2 = [
+4649,1200,2595,5760,2347,2300];  //12
+var iaps_block1_subblock3 = [
+2590,9594,1450,3000,4225,9332];  //18
+var iaps_block1_subblock4 = [
+7440,8311,8400,2682,2190,2770];  //24
+
+  //block 2
+var iaps_block2_subblock1 = [
+1052,8160,5534,5000,1645,4750];    //6
+var iaps_block2_subblock2 = [
+8540,5973,2352.2,3180,4810,2304]; //12
+var iaps_block2_subblock3 = [
+1661,9412,4664.1,7476,8185,3185]; //18
+var iaps_block2_subblock4 = [
+1303,3063,5830,9000,7545,7234];   //24
+
+  //block 3
+var iaps_block3_subblock1 = [
+6550,8190,8312,4574,8065,6263];  //6
+var iaps_block3_subblock2 = [
+4624,1460,2205,7046,2530,7175];  //12
+var iaps_block3_subblock3 = [
+7078,8200,1931,1710,4274,3053];  //18
+var iaps_block3_subblock4 = [
+2210,2091,2688,4490,2580,9471];  //24
 
 function getiapsFile(image_num) {
   return 'http://web.stanford.edu/~mtb/IAPS_stimuli/' + image_num + '.jpg'; //images stored on my website
 }
 
 // Initialize rating scale order for entire experiment (50% chance)
-var order = Math.random()
-if (order >= 0.5) {
+var set_scale_order = Math.random();
+if (set_scale_order >= 0.5) {
   var scale_order = 'AB';
 } else {
   var scale_order = 'BA';
 }
 
-// Initialize presentation order (randomly out of 8 possible counterbalanced orders)
-var present_order = Math.floor(Math.random() * (8)) + 1;
+// Initialize bipolar/unipolar scale order for entire experiment (50% chance)
+var set_first_scaletype = Math.random();
+if (set_first_scaletype >= 0.5) {
+  var first_scale_type = 'bipolar';
+} else {
+  var first_scale_type = 'unipolar';
+}
 
+  //practice trials
 var scale_type = [
   'bipolar',
   'bipolar',
   'unipolar',
   'unipolar'];
 
+  //experiment trials
 var setScaleType = function() {
-  if (present_order == 1) {
+  if (set_first_scaletype == 'bipolar') {
     scale_type = [
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
       'bipolar',
       'unipolar',
       'bipolar',
       'unipolar'];
-    subblock_order = [1,2,3,4];
-    iaps_order = shuffle(iaps);
-  } 
-  if (present_order == 2) {
-    scale_type = [
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar'];
-    subblock_order = [3,1,4,2];
-    iaps_order = shuffle(iaps);
-  } 
-  if (present_order == 3) {
-    scale_type = [
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar'];
-    subblock_order = [2,4,1,3];
-    iaps_order = shuffle(iaps);
   }
-  if (present_order == 4) {
+  if (set_first_scaletype == 'bipolar') {
     scale_type = [
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar'];
-    subblock_order = [4,3,2,1];
-    iaps_order = shuffle(iaps);
-  } 
-  if (present_order == 5) {
-    scale_type = [
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
       'unipolar',
       'bipolar',
       'unipolar',
       'bipolar'];
-    subblock_order = [4,3,2,1];
-    iaps_order = shuffle(iaps);
-  } 
-  if (present_order == 6) {
-    scale_type = [
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar'];
-    subblock_order = [2,4,1,3];
-    iaps_order = shuffle(iaps);
-  } 
-  if (present_order == 7) {
-    scale_type = [
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar'];
-    subblock_order = [3,1,4,2];
-    iaps_order = shuffle(iaps);
-  } 
-  if (present_order == 8) {
-    scale_type = [
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar',
-      'unipolar',
-      'bipolar'];
-    subblock_order = [1,2,3,4];
-    iaps_order = shuffle(iaps);
   } 
 }
 
-// Set counts for trial, subblock, block, and part_of_trial
+// Initialize block for entire experiment (1 out of 3 blocks), and set randomized trial order within each block
+var choose_block = Math.floor(Math.random() * (3)) + 1;
+if (choose_block == 1) {
+  block = 1;
+  //randomize trial order within each subblock
+  subblock1_order = shuffle(iaps_block1_subblock1);
+  subblock2_order = shuffle(iaps_block1_subblock2);
+  subblock3_order = shuffle(iaps_block1_subblock3);
+  subblock4_order = shuffle(iaps_block1_subblock4);
+} 
+if (choose_block == 1) {
+  block = 2;
+  subblock1_order = shuffle(iaps_block2_subblock1);
+  subblock2_order = shuffle(iaps_block2_subblock2);
+  subblock3_order = shuffle(iaps_block2_subblock3);
+  subblock4_order = shuffle(iaps_block2_subblock4);
+}
+if (choose_block == 3) {
+  block = 3;
+  subblock1_order = shuffle(iaps_block3_subblock1);
+  subblock2_order = shuffle(iaps_block3_subblock2);
+  subblock3_order = shuffle(iaps_block3_subblock3);
+  subblock4_order = shuffle(iaps_block3_subblock4);
+}
+
+// Initialize order of subblocks
+var present_order = Math.floor(Math.random() * (4)) + 1;
+if (present_order == 1) {
+  subblock_order = [1,2,3,4];
+  iaps_order = concatNarrays(subblock1_order, subblock2_order, subblock3_order, subblock4_order);
+} 
+if (present_order == 2) {
+  subblock_order = [3,1,4,2];
+  iaps_order = concatNarrays(subblock3_order, subblock1_order, subblock4_order, subblock2_order);
+} 
+if (present_order == 3) {
+  subblock_order = [2,4,1,3];
+  iaps_order = concatNarrays(subblock2_order, subblock4_order, subblock1_order, subblock3_order);
+}
+if (present_order == 4) {
+  subblock_order = [4,3,2,1];
+  iaps_order = concatNarrays(subblock4_order, subblock3_order, subblock2_order, subblock1_order);
+} 
+
+// Set variables to use throughout experiment
 var trial = 1;
 var subblock = 1;
-var block = 1;
-var part_of_trial = 0; // make sure this updates!
-var new_subblock;
+var block;
+var part_of_trial = 0;
 var new_block;
 var iaps_trial;
 var scale_content;
 var scale_type;
 var iaps_order;
 var subblock_order;
-
+var present_order;
+var subblock1_order;
+var subblock2_order;
+var subblock3_order;
+var subblock4_order;
 var date = new Date();
+
 // ############################## Instructions ##################################
 
 // Show the instructions slide -- this is what we want subjects to see first.
@@ -487,11 +425,13 @@ var experiment = {
 
     // The object to be submitted.
     data: {
-      //trial info
+      //experiment info
       iaps_order: [],
       scale_order: [],
       scale_type: [],
       scale_content: [],
+      subblock_order: [],
+      set_first_scaletype: [],
       //where we are in trials
       is_practice: [],
       part_of_trial: [],
@@ -499,7 +439,6 @@ var experiment = {
       subblock: [],
       subblock_order: [],
       block: [],
-      new_subblock: [],
       new_block: [],
       //trial data
       iaps_trial: [],
@@ -520,7 +459,6 @@ var experiment = {
 
     start_ms: 0,  // time current trial started ms
     num_errors: 0,    // number of errors so far in current trial
-    trials_left: totalTrials,
 
     // end the experiment
     end: function() {
@@ -541,9 +479,9 @@ var experiment = {
           // Push where we are in trials
           experiment.data.is_practice.push(is_practice);          
           experiment.data.block.push(block);
-          experiment.data.new_block.push(new_block)
+          experiment.data.set_first_scaletype.push(set_first_scaletype);
+          experiment.data.subblock_order.push(subblock_order);
           experiment.data.subblock.push(subblock);
-          experiment.data.new_subblock.push(new_subblock)
           experiment.data.trial.push(trial);
           experiment.data.part_of_trial.push(part_of_trial);
 
@@ -588,9 +526,6 @@ var experiment = {
     next: function() {      
       // Allow experiment to start if it's a turk worker OR if it's a test run
       if (window.self == window.top | turk.workerId.length > 0) {
-          // $("#prog").attr("style","width:" +
-          //     String(100 * (1 - iaps_order.length/totalTrials)) + "%")
-          // style="width:progressTotal%"
 
           // practice trials
           if (is_practice == true) {
