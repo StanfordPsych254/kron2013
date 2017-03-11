@@ -548,15 +548,15 @@ var experiment = {
               window.setTimeout(function() {
                 $("#stage-content").show();
                 experiment.start_ms = Date.now();
-              }, 300);
+              }, 3000);
 
               window.setTimeout(function() {
                 $("#stage-content").hide();
-              }, 900);
+              }, 9000);
 
               window.setTimeout(function() {
                 showRating();
-              }, 900);
+              }, 9000);
             }
           } 
           // experimental trials
@@ -596,15 +596,15 @@ var experiment = {
             window.setTimeout(function() {
               $("#stage-content").show();
               experiment.start_ms = Date.now();
-            }, 300);
+            }, 3000);
 
             window.setTimeout(function() {
               $("#stage-content").hide();
-            }, 900);
+            }, 9000);
 
             window.setTimeout(function() {
               showRating()
-            }, 900);
+            }, 9000);
           }  
       }
     },
