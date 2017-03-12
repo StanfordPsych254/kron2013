@@ -365,7 +365,6 @@ var trial = 1;
 var subblock = 0;
 var block;
 var part_of_trial = 0;
-var new_block;
 var iaps_trial;
 var scale_content;
 var scale_type;
@@ -423,7 +422,6 @@ var experiment = {
       subblock: [],
       subblock_order: [],
       block: [],
-      new_block: [],
       //trial data
       iaps_trial: [],
       rating: [],
@@ -462,18 +460,15 @@ var experiment = {
         if (radio[i].checked) {
           // Push where we are in trials
           experiment.data.is_practice.push(is_practice);          
-          experiment.data.block.push(block);
-          experiment.data.set_first_scaletype.push(set_first_scaletype);
-          experiment.data.subblock_order.push(subblock_order);
           experiment.data.subblock.push(subblock);
           experiment.data.trial.push(trial);
           experiment.data.part_of_trial.push(part_of_trial);
 
           // Push the trial info
           if (is_practice == true) {
-            experiment.data.scale_type.push(scale_type[trial]);
+            experiment.data.scale_type.push(scale_type[trial-1]);
           } else {
-            experiment.data.scale_type.push(scale_type[subblock]);
+            experiment.data.scale_type.push(scale_type[subblock-1]);
           }
           experiment.data.scale_order.push(scale_order);
           experiment.data.iaps_trial.push(iaps_trial);
@@ -626,6 +621,11 @@ var experiment = {
       experiment.data.age.push(document.getElementById("age").value);
       experiment.data.gender.push(document.getElementById("gender").value);
       experiment.data.chronotype.push(document.getElementById("chronotype").value);
+
+      // Save experiment info
+      experiment.data.set_first_scaletype.push(set_first_scaletype);
+      experiment.data.block.push(block);
+      experiment.data.subblock_order.push(subblock_order);
       // experiment.data.education.push(document.getElementById("education").value);
       //experiment.data.expt_aim.push(document.getElementById("expthoughts").value);
       //experiment.data.expt_gen.push(document.getElementById("expcomments").value);
