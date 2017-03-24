@@ -1,7 +1,3 @@
-// 3/6/17: Outstanding issues to fix:
-// create pseudorandom order of trials within subblocks, then randomize order of subblocks
-// optional: enter normative IAPS ratings so data is easier to deal with
-
 // ################################ Overview #####################################
 
 // I'm implementing the experiment using a data structure that I call a **sequence**. The insight behind sequences is that many experiments consist of a sequence of largely homogeneous trials that vary based on a parameter. For instance, in this example experiment, a lot stays the same from trial to trial - we always have to present some number, the subject always has to make a response, and we always want to record that response. Of course, the trials do differ - we're displaying a different number every time. The idea behind the sequence is to separate what stays the same from what differs - to **separate code from data**. This results in **parametric code**, which is much easier to maintain - it's simple to add, remove, or change conditions, do randomization, and do testing.
@@ -9,16 +5,12 @@
 // ## High-level overview
 // Things happen in this order:
 // 
-// 1. Compute randomization parameters (block order and trial order) and show the instructions slide.
+// 1. Compute randomization parameters (block order and trial order), set the number of participants per condition to run with maker-getter, and show the instructions slide.
 // 2. Set up the experiment sequence object.
 // 3. When the subject clicks the start button, it calls <code>experiment.next()</code>
 // 4. <code>experiment.next()</code> checks if there are any trials left to do. If there aren't, it calls <code>experiment.end()</code>, which shows the finish slide, waits for 1.5 seconds, and then uses mmturkey to submit to Turk.
 // 5. If there are more trials left, <code>experiment.next()</code> shows the next trial, records the current time for computing reaction time, and sets up a listener for a key press.
 // 6. The key press listener, when it detects a key response, constructs a data object, which includes the presented IAPS stimulus number, RT (current time - start time), and rating response. This entire object gets pushed into the <code>experiment.data</code> array. Then we show a blank screen and wait 500 milliseconds before calling <code>experiment.next()</code> again.
-
-
-// To do practice: copy rest of experiment
-// append practice photos onto IAPS length - append, say if 3* (or however many) then done
 
 // ############################## Helper functions ##############################
 
@@ -31,7 +23,7 @@ function showSlide(id) {
   $("#"+id).show();
 }
 
-// Get random integers. This is useful for randomizing Rating order.
+// Get random integers. This is useful for randomizing subblock order.
 // When called with no arguments, it returns either 0 or 1. When called with one argument, *a*, it returns a number in {*0, 1, ..., a-1*}. When called with two arguments, *a* and *b*, returns a random value in {*a*, *a + 1*, ... , *b*}.
 function random(a,b) {
   if (typeof b == "undefined") {
@@ -93,7 +85,7 @@ var mobilecheck = function() {
    return checkmobile;
 };
 
-// Set scale to show
+// Set which rating scale to show
 var showRating = function() {
   countPosition();
     if (part_of_trial == 0) { // If back at beginning of trial, go to next image
@@ -221,6 +213,7 @@ var showRating = function() {
   } 
 }
 
+//Set function that keeps track of where within a trial and block we are
 var countPosition = function() {
   // Count part_of_trial: 0 = picture, 1 = 1st rating scale, 2 = 2nd rating scale
   if (part_of_trial == 2) {  // if 2nd rating has been completed, start at top of next trial
@@ -239,7 +232,7 @@ var countPosition = function() {
 
 // ############################## Configuration settings ##############################
 
-// Set IAPS stimuli
+// Set IAPS stimuli (these should be pre-loaded in the .html file)
 
   //block 1
 var iaps_block1_subblock1 = [
@@ -271,34 +264,87 @@ var iaps_block3_subblock3 = [
 var iaps_block3_subblock4 = [
 2210,2091,2688,4490,2580,9471];  //24
 
+// Call stimuli from where they are stored (on my personal website)
 function getiapsFile(image_num) {
   return 'http://web.stanford.edu/~mtb/IAPS_stimuli/' + image_num + '.jpg'; //images stored on my website
 }
 
-// Initialize rating scale order for entire experiment (50% chance)
-var set_scale_order = Math.random();
-if (set_scale_order >= 0.5) {
-  var scale_order = 'AB';
-} else {
-  var scale_order = 'BA';
+// SET CONDITIONS for rating order, scale type order, and block for each participant using maker-getter
+// Maker-getter is a function that randomizes a particular number of participants to each condition, set by condCounts. This ensures that you have an even number of participants per condition, rather than randomizing and hoping it evens out.
+// Call the maker getter to get the cond variable, which sets the condition a given participant is in:
+try {
+    var filename = "MTB_kron_conditioncount_pilotB" // file keeping count of the randomization: "MTB_kron_conditioncount" was Pilot A; "MTB_kron_conditioncount_pilotB" was pilotB; "MTB_kron_conditioncount_exp" was final experiment
+    var condCounts = "1,1;2,1;3,1;4,1;5,1;6,1"  //sets number of conditions and number of participants per condition: "MTB_kron_conditioncount" was 8/condition; "MTB_kron_conditioncount_pilotB" was 1/condition; "MTB_kron_conditioncount_exp" was 8/condition
+    xmlHttp.open( "GET", "https://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" +  // call the maker-getter script from Mike Frank's website
+   condCounts +"&filename=" + filename, false );
+    xmlHttp.send( null );
+    var cond = xmlHttp.responseText;
+} catch (e) {
+    var cond = 1;
+}
+// Decrement only if this is an actual turk worker!  
+if (turk.workerId.length > 0){
+ var xmlHttp = null;
+ xmlHttp = new XMLHttpRequest();
+ xmlHttp.open('GET',    
+  'https://langcog.stanford.edu/cgi-bin/subject_equalizer/' + 
+  'decrementer.php?filename=' + 
+  filename + "&to_decrement=" + cond, false);
+  xmlHttp.send(null);
 }
 
-// Initialize bipolar/unipolar scale order for entire experiment (50% chance)
-var set_first_scaletype = Math.random();
-if (set_first_scaletype >= 0.5) {
-  var first_scale_type = 'bipolar';
+// Set parameters of each condition:
+var set_scale_order;
+var set_first_scaletype;
+var choose_block;
+
+if (cond <= 6) {
+  scale_order = "AB";
 } else {
-  var first_scale_type = 'unipolar';
+  scale_order = "BA";
+}
+if ((cond <= 3) || (cond >= 7 && cond <= 9)) {
+  set_first_scaletype = "bipolar";
+}
+if ((cond >= 3 && cond <= 6) || (cond >= 10)) {
+  set_first_scaletype = "unipolar";
+}
+if (cond == 1 || cond == 4 || cond == 7 || cond == 10) {
+  choose_block = 1;
+}
+if (cond == 2 || cond == 5 || cond == 8 || cond == 11) {
+  choose_block = 2;
+}
+if (cond == 3 || cond == 6 || cond == 9 || cond == 12) {
+  choose_block = 3;
 }
 
-  //practice trials
+//to check, use display(cond)
+
+// // To randomized, instead of using maker-getter:
+// //var set_scale_order = Math.random();
+// if (set_scale_order >= 0.5) {
+//   var scale_order = 'AB';
+// } else {
+//   var scale_order = 'BA';
+// }
+
+// // Initialize bipolar/unipolar scale order for entire experiment (50% chance)
+// //var set_first_scaletype = Math.random();
+// if (set_first_scaletype >= 0.5) {
+//   var first_scale_type = 'bipolar';
+// } else {
+//   var first_scale_type = 'unipolar';
+// }
+
+//practice trials
 var scale_type = [
   'bipolar',
   'bipolar',
   'unipolar',
   'unipolar'];
 
-  //experiment trials
+//experiment trials
 var setScaleType = function() {
   if (set_first_scaletype == 'bipolar') {
     scale_type = [
@@ -317,7 +363,8 @@ var setScaleType = function() {
 }
 
 // Initialize block for entire experiment (1 out of 3 blocks), and set randomized trial order within each block
-var choose_block = Math.floor(Math.random() * (3)) + 1;
+
+//var choose_block = Math.floor(Math.random() * (3)) + 1;
 if (choose_block == 1) {
   block = 1;
   //randomize trial order within each subblock
@@ -409,7 +456,6 @@ var experiment = {
     // The object to be submitted.
     data: {
       //experiment info
-      iaps_order: [],
       scale_order: [],
       scale_type: [],
       scale_content: [],
@@ -420,7 +466,6 @@ var experiment = {
       part_of_trial: [],
       trial: [],
       subblock: [],
-      subblock_order: [],
       block: [],
       //trial data
       iaps_trial: [],
@@ -435,8 +480,10 @@ var experiment = {
       date: [],
       age: [],
       gender: [],
-      education: [],
-      chronotype: []
+      // education: [],
+      chronotype: [],
+      attentioncheck: [],
+      expt_gen: []
     },
 
     start_ms: 0,  // time current trial started ms
@@ -621,6 +668,7 @@ var experiment = {
       experiment.data.age.push(document.getElementById("age").value);
       experiment.data.gender.push(document.getElementById("gender").value);
       experiment.data.chronotype.push(document.getElementById("chronotype").value);
+      experiment.data.attentioncheck.push(document.getElementById("attncheck").value);
 
       // Save experiment info
       experiment.data.set_first_scaletype.push(set_first_scaletype);
@@ -628,7 +676,7 @@ var experiment = {
       experiment.data.subblock_order.push(subblock_order);
       // experiment.data.education.push(document.getElementById("education").value);
       //experiment.data.expt_aim.push(document.getElementById("expthoughts").value);
-      //experiment.data.expt_gen.push(document.getElementById("expcomments").value);
+      experiment.data.expt_gen.push(document.getElementById("expcomments").value);
       //experiment.data.type.push(type);
 
 
@@ -640,7 +688,6 @@ var experiment = {
 // Everything we save before experiment starts
 //Save subblock order and iaps order
 experiment.data.subblock_order.push(subblock_order);
-experiment.data.iaps_order.push(iaps_order);
 // Save mobile check
 experiment.data.checkmobile.push(checkmobile);
 // Save window data
@@ -653,13 +700,17 @@ $(function() {
     rules: {
       "age": "required",
       "gender": "required",
-      "education": "required",
+      "chronotype": "required",
+      "attncheck": "required",
+      //"education": "required",
       //"race[]": "required",
     },
     messages: {
       "age": "Please choose an option",
       "gender": "Please choose an option",
-      "education": "Please choose an option",
+      "chronotype": "Please choose an option",
+      "attncheck": "Please choose an option",
+      //"education": "Please choose an option",
     },
     submitHandler: function(form) {
       experiment.submit_comments()

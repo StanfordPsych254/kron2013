@@ -1,7 +1,6 @@
 <!-- ## Introduction -->
 <!-- This experiment is a picture rating task. On every trial, the subject sees a picture for 6 sec and then makes two different ratings about how the picture made them feel. There are two between-subjects independent variables: which scales are seen with which pictures and the order of picture presentation. There are three dependent variables: affective arousal ratings, bipolar valence ratings, and unipolar pleasant/unpleasant valence ratings. -->
 
-
 <!-- ## Code -->
 <html>
 <head>
@@ -23,7 +22,7 @@
   <img src="images/stanford.png" alt="Stanford University">
   <h3 id='logo-text'>Stanford Psychophysiology Lab</h3>
   <div class="block-text study-instr">
-  <p> In this study, we are interested in how people respond to pictures that represent a lot of different events that occur in life. For the next 20 or so minutes, you will be looking at different pictures projected on the screen in front of you, and you will be rating each picture in terms of how it made you feel while viewing it. 
+  <p> In this study, we are interested in how people respond to pictures that represent a lot of different events that occur in life. For the next 10 minutes, you will be looking at different pictures projected on the screen in front of you, and you will be rating each picture in terms of how it made you feel while viewing it. 
   <br> 
   <br> 
   You will be asked to make two different kinds of ratings for every picture. You will either rate your calm vs. aroused feelings and unpleasant vs. pleasant feelings, or you will separately rate your unpleasant feelings and your pleasant feelings. There are no right or wrong answers, so simply respond as honestly as you can.
@@ -34,7 +33,7 @@
 
   <button type="button" onclick="this.blur(); showSlide('instructions2')">Next</button>
   
-  <p class="block-text"><br> <b> This HIT will not work on mobile devices. Please use a computer browser and set your browser window to fullscreen. 
+  <p class="block-text"><br> <b> This HIT will not work on mobile devices. Please use a Chrome, Firefox, or Safari browser on a computer and set your browser window to fullscreen. 
   <br>
   <br>Note: You won't be able to preview this HIT before accepting it because it's so short. </b></p>
 
@@ -67,7 +66,7 @@
   First, you will practice the task a few times to make sure that you understand the instructions.
   <br>
   <br>
-  Please ensure that your browser is in fullscreen mode before you continue.
+  Please ensure that you are using a Chrome, Firefox, or Safari browser on a computer and that your browser is in fullscreen mode before you continue.
   </p>
   <button type="button" onclick="this.blur(); practice()">Start</button>
 </div>
@@ -107,7 +106,7 @@
   At the other end of the scale, you feel completely pleased, happy, satisfied, content, or hopeful. 
   <br>
   <br>
-  A score of 4 indicates a completely neutral, neither pleasant/happy nor unpleasant/sad state.</h5><br>
+  A score of 0 indicates a completely neutral, neither pleasant/happy nor unpleasant/sad state.</h5><br>
 </div>
 <table align = "center"><tr>
 <td align="center">
@@ -116,15 +115,15 @@
       <span class="bipolarvalence-instr">Unpleasant feelings</span>
     </td>
     <td> </td>
+    <td><label><input type="radio" name="judgment" value="-4">-4</label></td>
+    <td><label><input type="radio" name="judgment" value="-3">-3</label></td>
+    <td><label><input type="radio" name="judgment" value="-2">-2</label></td>
+    <td><label><input type="radio" name="judgment" value="-1">-1</label></td>
     <td><label><input type="radio" name="judgment" value="0">0</label></td>
     <td><label><input type="radio" name="judgment" value="1">1</label></td>
     <td><label><input type="radio" name="judgment" value="2">2</label></td>
     <td><label><input type="radio" name="judgment" value="3">3</label></td>
     <td><label><input type="radio" name="judgment" value="4">4</label></td>
-    <td><label><input type="radio" name="judgment" value="5">5</label></td>
-    <td><label><input type="radio" name="judgment" value="6">6</label></td>
-    <td><label><input type="radio" name="judgment" value="7">7</label></td>
-    <td><label><input type="radio" name="judgment" value="8">8</label></td>
     <td>&nbsp;&nbsp;&nbsp;</td>
     <td>
       <span class="bipolarvalence-instr">Pleasant feelings</span>
@@ -329,13 +328,27 @@
       </p>
       <select name="chronotype" id="chronotype" form="demographics" required>
         <option value="">Choose an option</option>
-        <option value="1">Very much a "morning person"</option>
-        <option value="2">Somewhat a "morning person"</option>
-        <option value="3">Neither</option>
-        <option value="4">Somewhat an "evening person"</option>
-        <option value="5">Very much an "evening person"</option>
+        <option value="very_morning">Very much a "morning person"</option>
+        <option value="somewhat_morning">Somewhat a "morning person"</option>
+        <option value="neither">Neither</option>
+        <option value="somewhat_evening">Somewhat an "evening person"</option>
+        <option value="very_evening">Very much an "evening person"</option>
         <option value="other">Other</option>
         <option value="no_answer">Prefer not to answer</option>
+      </select>
+    </div>
+
+    <div class="question">
+     <p>
+       <b>What were you rating throughout this task?</b>
+       <label id="attncheck-error" class="error" for="attncheck">Please choose an option</label>
+      </p>
+      <select name="attncheck" id="attncheck" form="demographics" required>
+        <option value="">Choose an option</option>
+        <option value="fail_attncheck">The feelings portrayed in the pictures</option>
+        <option value="pass_attncheck">The feelings I experienced, elicited by the pictures</option>
+        <option value="neither">Neither</option>
+        <option value="other">Other</option>
       </select>
     </div>
 
@@ -355,6 +368,8 @@
 <div class="slide" id="finished">
   <p class="block-text">
   Thank you for participating in the study replicating "How Are You Feeling? Revisiting the Quantification of Emotional Qualia"! The purpose of the study is to understand how people report on their feelings of positive and negative emotion and emotional arousal. In this study, we asked participants to rate how pleasant, unpleasant, or emotionally arousing they judged pictures to be. We expect to find that asking about emotional responses to pictures using two unipolar scales of pleasant and unpleasant affect will capture more information about positive and negative emotion and emotional arousal than the scale measuring pleasant and unpleasant emotion along a single scale. If you would like to learn more about this topic we are happy to provide references.
+  <br>
+  <b> Please do not share your experience doing this study with other potential participants. Thank you. </b>
   </p>
   <button type="button" onclick="this.blur(); turk.submit(experiment.data);">Finish</button>
 
@@ -365,83 +380,83 @@
 
 <!-- preload IAPS images -->
 <div style="width:0;height:0;overflow:hidden">
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1052.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1200.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1303.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1450.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1460.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1540.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1645.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1661.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1710.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1931.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2091.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2190.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2205.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2210.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2300.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2304.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2347.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2352.2.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2358.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2530.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2580.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2590.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2595.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2682.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2688.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2770.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2900.1.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3000.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3053.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3063.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3180.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/3185.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4225.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4274.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4490.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4574.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4624.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4643.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4649.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4664.1.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4750.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4810.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5000.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5534.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5760.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5830.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5973.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/6263.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/6550.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/6562.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7046.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7078.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7175.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7234.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7440.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7476.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/7545.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8065.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8160.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8185.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8190.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8200.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8311.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8312.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8400.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8475.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/8540.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9000.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9332.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9412.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9471.jpg" />
-  <img src="http://web.stanford.edu/~mtb/IAPS_stimuli/9594.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1052.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1200.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1303.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1450.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1460.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1540.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1645.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1661.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1710.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1931.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2091.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2190.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2205.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2210.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2300.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2304.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2347.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2352.2.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2358.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2530.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2580.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2590.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2595.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2682.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2688.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2770.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2900.1.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/3000.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/3053.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/3063.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/3180.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/3185.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4225.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4274.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4490.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4574.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4624.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4643.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4649.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4664.1.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4750.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4810.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/5000.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/5534.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/5760.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/5830.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/5973.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/6263.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/6550.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/6562.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7046.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7078.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7175.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7234.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7440.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7476.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/7545.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8065.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8160.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8185.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8190.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8200.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8311.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8312.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8400.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8475.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/8540.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/9000.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/9332.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/9412.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/9471.jpg" />
+  <img src="https://web.stanford.edu/~mtb/IAPS_stimuli/9594.jpg" />
 <!-- practice IAPS pics: -->
-<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/5010.jpg" />
-<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/4005.jpg" />
-<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/1820.jpg" />
-<img src="http://web.stanford.edu/~mtb/IAPS_stimuli/2320.jpg" />
+<img src="https://web.stanford.edu/~mtb/IAPS_stimuli/5010.jpg" />
+<img src="https://web.stanford.edu/~mtb/IAPS_stimuli/4005.jpg" />
+<img src="https://web.stanford.edu/~mtb/IAPS_stimuli/1820.jpg" />
+<img src="https://web.stanford.edu/~mtb/IAPS_stimuli/2320.jpg" />
 
 </div>
 
