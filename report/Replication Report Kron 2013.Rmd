@@ -99,13 +99,9 @@ We also compared our participants' ratings to IAPS normative ratings to ensure t
 
 **Key analysis of interest:** 
 
-As our primary index of whether this replication was successful, we focused on a key analysis of interest, a mixed linear regression model of self-reported arousal as predicted by the sum of self-reported pleasant and unpleasant unipolar ratings.
+As our primary index of whether this replication was successful, we focused on a key analysis of interest, a mixed linear regression model of self-reported arousal as predicted by the sum of self-reported pleasant and unpleasant unipolar ratings. Kron and colleagues presented the regression coefficient *r* for the linear correlation between arousal and the sum of pleasant and unpleasant scores.
 
-For the key analysis, Kron and colleagues presented the regression coefficient *r* for the linear correlation between arousal and the sum of pleasant and unpleasant scores.
-
-We therefore replicated their analysis with two mixed linear models. We entered (uncentered) unipolar ratings scores as fixed effects to predict bipolar ratings scores:
-
-Arousal ratings ~ sum of pleasant + unpleasant ratings, with subject and item intercepts and slopes entered as random effects. 
+We therefore replicated their analysis with a mixed linear models. We entered (uncentered) summed pleasant + unpleasant scores as fixed effects to predict arousal ratings scores, with subject and item intercepts and slopes entered as random effects. 
 
 The key results figure from the original paper plots the relationship between summed pleasant and unpleasant rating scores on the X axis and arousal scores on the Y axis.
 
@@ -141,7 +137,6 @@ Finally, we recruited participants online from Amazon Mechanical Turk and presen
 
 #### Differences from pre-data collection methods plan
   Any differences from what was described as the original plan, or “none”.
-
 
 ##Results
 
@@ -358,9 +353,60 @@ d_regather = d_spread%>%
 #factor variables
 d_regather$rating = factor(d_regather$rating)
 
+
+###### TRY:
+d_spread_ctr <- d_filtered %>%
+  spread(rating,response) %>%
+  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant) %>% #calculate sum and diff of unipolar ratings
+  transform(bipolarvalence = scale(bipolarvalence, center=TRUE)) %>% #center all scores
+  transform(arousal = scale(arousal, center=TRUE)) %>% #center all scores
+  transform(pleasant = scale(pleasant, center=TRUE)) %>% #center all scores
+  transform(unpleasant = scale(unpleasant, center=TRUE)) %>% #center all scores
+  transform(sum_pl_un = scale(sum_pl_un, center=TRUE)) %>% #center all scores
+  transform(diff_pl_un = scale(diff_pl_un, center=TRUE)) #center all scores
+
+d_regather_ctr = d_spread_ctr%>%
+  gather(rating, response, arousal:diff_pl_un) %>%
+  mutate(predictor = NA) %>%
+  mutate(rating_type = NA) %>%
+  mutate(bipolarvalence_diff_pl_un = NA) %>%
+  mutate(arousal_sum_pl_un = NA) %>%
+  filter(rating!="unpleasant") %>% #may not need to remove...
+  filter(rating!="pleasant")       #may not need to remove...
+for (p in 1:dim(d_regather)[1]) {
+  if (d_regather$rating[p]=="arousal" || d_regather$rating[p]=="sum_pl_un") {
+    d_regather$predictor[p] = "arousal/sum_pl_un"
+  }
+  if (d_regather$rating[p]=="bipolarvalence" || d_regather$rating[p]=="diff_pl_un") {
+    d_regather$predictor[p] = "bipolarvalence/diff_pl_un"
+  }
+  if (d_regather$rating[p]=="arousal" || d_regather$rating[p]=="bipolarvalence") {
+    d_regather$rating_type[p] = "bipolar"
+  }
+  if (d_regather$rating[p]=="sum_pl_un" || d_regather$rating[p]=="diff_pl_un") {
+    d_regather$rating_type[p] = "unipolar"
+  }
+  if (d_regather$predictor[p]=="bipolarvalence/diff_pl_un") {
+    d_regather$bipolarvalence_diff_pl_un[p] = 1
+    d_regather$arousal_sum_pl_un[p] = 0
+  }
+  if (d_regather$predictor[p]=="arousal/sum_pl_un") {
+    d_regather$arousal_sum_pl_un[p] = 1
+    d_regather$bipolarvalence_diff_pl_un[p] = 0
+  }
+}
+
+#factor variables
+d_regather_ctr$rating = factor(d_regather_ctr$rating)
+d_regather_ctr$predictor = factor(d_regather_ctr$predictor)
+d_regather_ctr$rating_type = factor(d_regather_ctr$rating_type)
+d_regather_ctr$arousal_sum_pl_un = factor(d_regather_ctr$arousal_sum_pl_un)
+d_regather_ctr$bipolarvalence_diff_pl_un = factor(d_regather_ctr$bipolarvalence_diff_pl_un)
+
+
 #Models:
 #mixed model with random intercept effects
-keyModel1 = lmer(arousal ~ sum_pl_un + (1|subID) + (1|iaps_trial), data=d_regather, REML = TRUE)
+keyModel1 = lmer(arousal ~ sum_pl_un + (1|subID) + (1|iaps_trial), data=d_spread, REML = TRUE)
 summary(keyModel1)
 
 #mixed model with random intercept and slope effects
