@@ -84,26 +84,13 @@ Participants who made the same rating on all trials were excluded for having not
 Participants who made more a response in less than 300ms were excluded for not having been appropriately attentive.
 Participants who failed to answer the attention check question correctly at the end were excluded.
 
-**Randomization checks:**
-
-We ran a chi-squared goodness-of-fit test to ensure that the four sub-blocks were presented in each of four possible positions an equal number of times across subjects.
-
-```{r}
-#This won't work until all data collected:
-#chisq.test(x=table(d_filtered$subblock_order),p=c(1,1,1,1))
-```
-
-**Check against normative ratings:**
-
-We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations.
+We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations. If linear correlations between our sample's ratings and normative IAPS ratings of bipolar valence and arousal were found to be significant, we assumed that our Mechanical Turk sample's affective responses were generalizeable to a broader population.
 
 **Key analysis of interest:** 
 
-As our primary index of whether this replication was successful, we focused on a key analysis of interest, a mixed linear regression model of self-reported arousal as predicted by the sum of self-reported pleasant and unpleasant unipolar ratings. Kron and colleagues presented the regression coefficient *r* for the linear correlation between arousal and the sum of pleasant and unpleasant scores.
+As our primary index of whether this replication was successful, we focused on a key analysis of interest, a linear regression model of self-reported arousal as predicted by the sum of self-reported pleasant and unpleasant unipolar ratings. As described by Kron and colleagues, rating scores were averaged across subjects for each picture, resulting in 72 data points. We then ran a linear regression model predicting arousal score from the (uncentered) sum of pleasant and unpleasant scores. 
 
-We therefore replicated their analysis with a mixed linear models. We entered (uncentered) summed pleasant + unpleasant scores as fixed effects to predict arousal ratings scores, with subject and item intercepts and slopes entered as random effects. 
-
-The key results figure from the original paper plots the relationship between summed pleasant and unpleasant rating scores on the X axis and arousal scores on the Y axis.
+Kron et al. reported finding a strongly significant correlation between bipolar arousal ratings and summed unipolar scores (*r* = 0.75, *p* < 0.0001, *$R^2$* = 0.57). The key results figure from the original paper plots the relationship between summed pleasant and unpleasant rating scores on the X axis and arousal scores on the Y axis.
 
 **Additional analysis:**
 
@@ -132,13 +119,13 @@ Finally, we recruited participants online from Amazon Mechanical Turk and presen
 
 <!-- You can comment this section out prior to final report with data collection. -->
 
-#### Actual Sample
-  Sample size, demographics, data exclusions based on rules spelled out in analysis plan
+<!-- #### Actual Sample -->
+<!--   Sample size, demographics, data exclusions based on rules spelled out in analysis plan -->
 
-#### Differences from pre-data collection methods plan
-  Any differences from what was described as the original plan, or “none”.
+<!-- #### Differences from pre-data collection methods plan -->
+<!--   Any differences from what was described as the original plan, or “none”. -->
 
-##Results
+<!-- ##Results -->
 
 
 ### Data preparation
@@ -154,9 +141,7 @@ library(tidyverse)
 library(jsonlite)
 library(rjson)
 library(RJSONIO)
-library(readr)
-library(lme4)
-library(lmerTest)
+library(ggthemes)
 
 Mode <- function(x, na.rm = FALSE) {
   if(na.rm){
@@ -184,7 +169,6 @@ workers_without_data <- data.frame()
 #loop through csv files
 for (file in files) {
   #read the csv file into jd
-  #jd <- fromJSON(paste(paste(directory, file, sep="")), flatten=TRUE)
   jd <- read_csv(paste(paste(directory, file, sep="")))
 
   for (i in 1:dim(jd)[1]) { #go through each WorkerID
@@ -315,6 +299,14 @@ d_filtered = raw_data_anon %>%
   filter(subID %in% ID_passed_attention_check1) %>%
   filter(subID %in% ID_passed_attention_check2)
 
+rm(p)
+
+#Factor variables
+d_filtered$iaps_trial = factor(d_filtered$iaps_trial)
+d_filtered$response = as.numeric(d_filtered$response)
+d_filtered$subID = factor(d_filtered$subID)
+d_filtered$rating = factor(d_filtered$rating)
+
 
 ### Save Pre-Processed Data
 
@@ -323,78 +315,78 @@ save(d_filtered, file="preprocessed_data.R")
 
 ```
 
-We did a randomization check, as described in the analysis plan, to check that sub-block order was roughly counterbalanced among participants:
+We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations, as indicated in our analysis plan.
 
-```{r}
-#This won't work until all data collected:
-#chisq.test(x=table(d_filtered$subblock_order),p=c(1,1,1,1))
-```
-
-We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations.
-
-We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations.
-
-```{r}
+```{r, message=FALSE, warning=FALSE}
 setwd("/Users/Maia/Desktop/Neuro/Stanford/Classes/PSYCH 254/replication_project/kron2013_254gitrepo")
 
-IAPSnorms <- read_csv("..analysis/normativeIAPSratings.csv")
+IAPSnorms <- read_csv("../analysis/normativeIAPSratings.csv")
 
-d_comparenorms <- d_regather    ##Fix this!
+d = d_filtered %>%
+  group_by(iaps_trial,rating) %>%
+  summarise(mean_resp = mean(response)) %>% #average responses across participants
+  spread(rating, mean_resp) %>%
+  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant)
+
+d_comparenorms <- d %>%
+  mutate(arousal_norm = NA, bipolarvalence_norm = NA) 
+for (p in 1:dim(d_comparenorms)[1]) {
+    d_comparenorms$arousal_norm[p] = IAPSnorms$Mean_Arousal[which(d_comparenorms$iaps_trial[p]==IAPSnorms$Stimulus_num)]
+    d_comparenorms$bipolarvalence_norm[p] = IAPSnorms$Mean_Valence[which(d_comparenorms$iaps_trial[p]==IAPSnorms$Stimulus_num)]
+}
+rm(p)
+d_comparenorms <- d_comparenorms %>%
+    transform(as.numeric(arousal:bipolarvalence_norm))
+
+normcompare_valence = lm(bipolarvalence_norm ~ bipolarvalence, data=d_comparenorms)
+res1 = summary(normcompare_valence)
+
+normcompare_arousal = lm(arousal_norm ~ arousal, data=d_comparenorms)
+res2 = summary(normcompare_arousal)
+
+#Plot bipolarvalence_norm ~ sample bipolar valence
+ggplot(data=d_comparenorms, 
+  aes(x = (bipolarvalence), y = (bipolarvalence_norm))) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x) + 
+  xlab("Sample Bipolar Valence Ratings") +
+  ylab("IAPS Normative Bipolar Valence Ratings") +
+  xlim(-4,4) +
+  ylim(0,9) +
+  ggthemes::theme_few()
+
+#Plot arousal_norm ~ sample arousal
+ggplot(data=d_comparenorms, 
+  aes(x = (arousal), y = (arousal_norm))) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x) + 
+  xlab("Sample Arousal Ratings") +
+  ylab("IAPS Normative Arousal Ratings") +
+  xlim(0,9) +
+  ylim(0,9) +
+  ggthemes::theme_few()
 ```
 
+We [confirmed] that both bipolar valence and arousal ratings in our sample were [significantly] linearly correlated with normative IAPS ratings for each item (valence: *r* = `r res1$coefficients["bipolarvalence","Estimate"]`, *p* = `r res1$coefficients["bipolarvalence","Pr(>|t|)"]`; arousal: *r* = `r res2$coefficients["arousal","Estimate"]`, *p* = `r res2$coefficients["arousal","Pr(>|t|)"]`). This indicated that the affective responses of our Mechanical Turk sample [DID or DID NOT] generalize to the broader population.
 
 ### Confirmatory analysis
 
 The analyses were completed as specified in the analysis plan.  
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 #KEY TEST:
 load("../analysis/preprocessed_data.R")
 
-d_filtered$iaps_trial = factor(d_filtered$iaps_trial)
-d_filtered$response = as.numeric(d_filtered$response)
-d_filtered$subID = factor(d_filtered$subID)
-d_filtered$rating = factor(d_filtered$rating)
+d = d_filtered %>%
+  group_by(iaps_trial,rating) %>%
+  summarise(mean_resp = mean(response)) %>% #average responses across participants
+  spread(rating, mean_resp) %>%
+  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant) #calculate sum and diff of unipolar ratings 
 
-d_spread = d_filtered %>% 
-  spread(rating,response)
+#Linear Regression Model:
+keyModel = lm(arousal ~ sum_pl_un, data=d)
+res3 = summary(keyModel)
 
-target_uni = c("pleasant","unpleasant")
-d_spread_unipolar = d_filtered %>% 
-  filter(rating==target_uni) %>%
-  select(iaps_trial, subID, rating, rating_type, response) %>%
-  spread(rating,response) %>%
-  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant) %>% #calculate sum and diff of unipolar ratings 
-  mutate(arousal = NA, bipolarvalence = NA) %>%
-  select(iaps_trial:rating_type, arousal, bipolarvalence, pleasant:diff_pl_un)
-
-target_bi = c("bipolarvalence","arousal")
-d_spread_bipolar = d_filtered %>%
-  filter(rating==target_bi) %>%
-  select(iaps_trial, subID, rating, rating_type, response) %>%
-  spread(rating, response) %>%
-  mutate(pleasant = NA, unpleasant = NA, sum_pl_un = NA, diff_pl_un = NA)
-
-d_spread_all = rbind(d_spread_bipolar, d_spread_unipolar) 
-
-d_regather_all = d_spread_all %>%
-  group_by(iaps_trial,subID) %>%
-  gather(rating, response, arousal:diff_pl_un)
-
-d_regather_all$rating = factor(d_regather_all$rating)
-
-
-#Models:
-#mixed model with random intercept effects
-#WON'T WORK: 
-keyModel1 = lmer(arousal ~ sum_pl_un + (1|subID) + (1|iaps_trial), data=d_spread_all, REML = TRUE)
-summary(keyModel1)
-
-#mixed model with random intercept and slope effects
-keyModel2 = lmer(arousal ~ sum_pl_un + (1|subID) + (predictor|subID) + (rating_type|subID) + (1|iaps_trial) + (predictor|iaps_trial) + (rating_type|iaps_trial), data=d_regather, REML = TRUE)
-summary(keyModel2)
-
-AIC(keyModel1, keyModel2)
 ```
 
 We recreated Kron et al.'s original figure:
@@ -402,14 +394,20 @@ We recreated Kron et al.'s original figure:
 
 ```{r}
 #Plot arousal ~ PL + UN
-ggplot(data=d_regather, 
-  aes(x = (rating==sum_pl_un), y = (rating==arousal))) +
+ggplot(data=d, 
+  aes(x = (sum_pl_un), y = (arousal))) +
   geom_point() +
   geom_smooth(method = "lm", formula = y ~ x) + 
-  xlab("Centered (Pleasant + Unpleasant) Ratings") +
-  ylab("Centered Arousal Ratings")
+  xlab("Pleasant + Unpleasant Ratings") +
+  ylab("Arousal Ratings") +
+  xlim(0,9) +
+  ylim(0,9) +
+  ggthemes::theme_few()
 ```
 
+We found that there [WAS/WAS NOT] a significant linear correlation between arousal ratings and the summed unipolar pleasant+unpleasant ratings (`r  res3$coefficients["sum_pl_un","Estimate"]`, *p* = `r res3$coefficients["sum_pl_un","Pr(>|t|)"]`
+) (see Figure). 
+This finding [DID/DID NOT] replicate Kron et al.'s reported finding (*r* = 0.75, *p* < 0.0001, *$R^2$* = 0.57). 
 
 ###Exploratory analyses
 
@@ -418,7 +416,7 @@ Any follow-up analyses desired (not required).
 
 ```{r include = FALSE}
 #Plot bipolar valence ~ PL - UN
-ggplot(data=d_spread, 
+ggplot(data=d, 
   aes(x = diff_pl_un, y = bipolarvalence)) +
   geom_point() +
   geom_smooth(method = "lm", formula = y ~ x) + 
