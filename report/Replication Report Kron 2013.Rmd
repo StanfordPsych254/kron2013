@@ -94,6 +94,8 @@ Kron et al. reported finding a strongly significant correlation between bipolar 
 
 **Additional analysis:**
 
+We will also run a linear regression model to determine whether average ratings of bipolar valence were significantly associated with the difference between average unipolar pleasant and unpleasant ratings.
+
 We may run further exploratory analysis.
 
 ###Differences from Original Study
@@ -411,18 +413,28 @@ This finding [DID/DID NOT] replicate Kron et al.'s reported finding (*r* = 0.75,
 
 ###Exploratory analyses
 
-Any follow-up analyses desired (not required). 
+We also ran a linear regression model to determine whether ratings of bipolar valence were significantly associated with the difference between unipolar pleasant and unpleasant ratings.
 
+```{r}
+#Model
+valenceModel = lm(bipolarvalence ~ diff_pl_un, data=d)
+res4 = summary(valenceModel)
 
-```{r include = FALSE}
 #Plot bipolar valence ~ PL - UN
 ggplot(data=d, 
   aes(x = diff_pl_un, y = bipolarvalence)) +
   geom_point() +
   geom_smooth(method = "lm", formula = y ~ x) + 
-  xlab("Centered (Pleasant - Unpleasant) Ratings") +
-  ylab("Centered Bipolar Valence Ratings")
+  xlab("Pleasant - Unpleasant Ratings") +
+  ylab("Bipolar Valence Ratings") +
+  xlim(0,9) +
+  ylim(-4,4) +
+  ggthemes::theme_few()
 ```
+
+We found that there [WAS/WAS NOT] a significant linear correlation between valence ratings and the difference of unipolar pleasant-unpleasant ratings (`r  res4$coefficients["diff_pl_un","Estimate"]`, *p* = `r res4$coefficients["diff_pl_un","Pr(>|t|)"]`
+) (see Figure). 
+This finding [DID/DID NOT] replicate Kron et al.'s reported finding (*r* = -0.13, *p* > 0.05). 
 
 ## Discussion
 
