@@ -179,6 +179,7 @@ files <- dir(directory, pattern =".csv")
 
 # make an empty data frame to append the data participant by participant
 raw_data <- data.frame()
+workers_without_data <- data.frame()
 
 #loop through csv files
 for (file in files) {
@@ -189,6 +190,7 @@ for (file in files) {
   for (i in 1:dim(jd)[1]) { #go through each WorkerID
   #output the Answers.data in json format, then read it back into R using rjsonio and rjsonlite
   answers <- jd$Answer.data[i]
+  if (is.na(answers) != TRUE) {    #if there is data, download it:
   file.create("answers.json")
   fileConn <- file("answers.json")
   writeLines(answers, fileConn)
@@ -238,8 +240,15 @@ for (file in files) {
   raw_data <- bind_rows(raw_data, id)
   
   #remove answers.json file
-  rm(answers)
-  file.remove("answers.json")
+    rm(answers)
+    file.remove("answers.json")
+  
+  } else {
+    workers_without_data = rbind(workers_without_data, jd$WorkerId[i]) #create list of people w/o data
+    
+    #remove answers.json file
+    rm(answers)
+    }
   }
 }
 
@@ -326,7 +335,9 @@ We also compared our participants' ratings to IAPS normative ratings to ensure t
 We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations.
 
 ```{r}
-IAPSnorms <- read_csv("../analysis/normativeIAPSratings.csv")
+setwd("/Users/Maia/Desktop/Neuro/Stanford/Classes/PSYCH 254/replication_project/kron2013_254gitrepo")
+
+IAPSnorms <- read_csv("..analysis/normativeIAPSratings.csv")
 
 d_comparenorms <- d_regather    ##Fix this!
 ```
@@ -342,71 +353,41 @@ load("../analysis/preprocessed_data.R")
 
 d_filtered$iaps_trial = factor(d_filtered$iaps_trial)
 d_filtered$response = as.numeric(d_filtered$response)
+d_filtered$subID = factor(d_filtered$subID)
+d_filtered$rating = factor(d_filtered$rating)
 
 d_spread = d_filtered %>% 
+  spread(rating,response)
+
+target_uni = c("pleasant","unpleasant")
+d_spread_unipolar = d_filtered %>% 
+  filter(rating==target_uni) %>%
+  select(iaps_trial, subID, rating, rating_type, response) %>%
   spread(rating,response) %>%
-  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant) #calculate sum and diff of unipolar ratings
-  
-d_regather = d_spread%>%
+  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant) %>% #calculate sum and diff of unipolar ratings 
+  mutate(arousal = NA, bipolarvalence = NA) %>%
+  select(iaps_trial:rating_type, arousal, bipolarvalence, pleasant:diff_pl_un)
+
+target_bi = c("bipolarvalence","arousal")
+d_spread_bipolar = d_filtered %>%
+  filter(rating==target_bi) %>%
+  select(iaps_trial, subID, rating, rating_type, response) %>%
+  spread(rating, response) %>%
+  mutate(pleasant = NA, unpleasant = NA, sum_pl_un = NA, diff_pl_un = NA)
+
+d_spread_all = rbind(d_spread_bipolar, d_spread_unipolar) 
+
+d_regather_all = d_spread_all %>%
+  group_by(iaps_trial,subID) %>%
   gather(rating, response, arousal:diff_pl_un)
 
-#factor variables
-d_regather$rating = factor(d_regather$rating)
-
-
-###### TRY:
-d_spread_ctr <- d_filtered %>%
-  spread(rating,response) %>%
-  mutate(sum_pl_un = pleasant + unpleasant, diff_pl_un = pleasant - unpleasant) %>% #calculate sum and diff of unipolar ratings
-  transform(bipolarvalence = scale(bipolarvalence, center=TRUE)) %>% #center all scores
-  transform(arousal = scale(arousal, center=TRUE)) %>% #center all scores
-  transform(pleasant = scale(pleasant, center=TRUE)) %>% #center all scores
-  transform(unpleasant = scale(unpleasant, center=TRUE)) %>% #center all scores
-  transform(sum_pl_un = scale(sum_pl_un, center=TRUE)) %>% #center all scores
-  transform(diff_pl_un = scale(diff_pl_un, center=TRUE)) #center all scores
-
-d_regather_ctr = d_spread_ctr%>%
-  gather(rating, response, arousal:diff_pl_un) %>%
-  mutate(predictor = NA) %>%
-  mutate(rating_type = NA) %>%
-  mutate(bipolarvalence_diff_pl_un = NA) %>%
-  mutate(arousal_sum_pl_un = NA) %>%
-  filter(rating!="unpleasant") %>% #may not need to remove...
-  filter(rating!="pleasant")       #may not need to remove...
-for (p in 1:dim(d_regather)[1]) {
-  if (d_regather$rating[p]=="arousal" || d_regather$rating[p]=="sum_pl_un") {
-    d_regather$predictor[p] = "arousal/sum_pl_un"
-  }
-  if (d_regather$rating[p]=="bipolarvalence" || d_regather$rating[p]=="diff_pl_un") {
-    d_regather$predictor[p] = "bipolarvalence/diff_pl_un"
-  }
-  if (d_regather$rating[p]=="arousal" || d_regather$rating[p]=="bipolarvalence") {
-    d_regather$rating_type[p] = "bipolar"
-  }
-  if (d_regather$rating[p]=="sum_pl_un" || d_regather$rating[p]=="diff_pl_un") {
-    d_regather$rating_type[p] = "unipolar"
-  }
-  if (d_regather$predictor[p]=="bipolarvalence/diff_pl_un") {
-    d_regather$bipolarvalence_diff_pl_un[p] = 1
-    d_regather$arousal_sum_pl_un[p] = 0
-  }
-  if (d_regather$predictor[p]=="arousal/sum_pl_un") {
-    d_regather$arousal_sum_pl_un[p] = 1
-    d_regather$bipolarvalence_diff_pl_un[p] = 0
-  }
-}
-
-#factor variables
-d_regather_ctr$rating = factor(d_regather_ctr$rating)
-d_regather_ctr$predictor = factor(d_regather_ctr$predictor)
-d_regather_ctr$rating_type = factor(d_regather_ctr$rating_type)
-d_regather_ctr$arousal_sum_pl_un = factor(d_regather_ctr$arousal_sum_pl_un)
-d_regather_ctr$bipolarvalence_diff_pl_un = factor(d_regather_ctr$bipolarvalence_diff_pl_un)
+d_regather_all$rating = factor(d_regather_all$rating)
 
 
 #Models:
 #mixed model with random intercept effects
-keyModel1 = lmer(arousal ~ sum_pl_un + (1|subID) + (1|iaps_trial), data=d_spread, REML = TRUE)
+#WON'T WORK: 
+keyModel1 = lmer(arousal ~ sum_pl_un + (1|subID) + (1|iaps_trial), data=d_spread_all, REML = TRUE)
 summary(keyModel1)
 
 #mixed model with random intercept and slope effects
