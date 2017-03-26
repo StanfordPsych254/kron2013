@@ -12,7 +12,7 @@ output:
 
 ##Introduction
 
-This study replicated Study 1 of "How Are You Feeling? Revisiting the Quantification of Emotional Qualia" by A Kron et al. (2013, *Psychological Science*). This study compared two methods of rating emotional qualia in order to determine whether unipolar pleasant/unpleasant affect rating scales could capture as much or more information than the traditionally used bipolar affect rating scales. The study compared ratings of 72 affective pictures from the International Affective Picture System (IAPS) using either bipolar or unipolar scales. The bipolar scales asked participants to rate their feelings of affective arousal from "calm" to "aroused", and their feelings of affective valence from "very unpleasant" to "very pleasant" with neutral in the center. The unipolar scales asked participants to separately rate their feelings from "no unpleasant feelings"to "strong unpleasant feelings" and from "no pleasant feelings" to "strong pleasant feelings". 
+This study replicated Study 1 of "How Are You Feeling? Revisiting the Quantification of Emotional Qualia" by A Kron et al. (2013, *Psychological Science*). This study compared two methods of rating emotional qualia in order to determine whether unipolar pleasant/unpleasant affect rating scales could capture as much or more information than the traditionally used bipolar affect rating scales. The study compared ratings of 72 affective pictures from the International Affective Picture System (IAPS) using either bipolar or unipolar scales. The bipolar scales asked participants to rate their feelings of affective arousal from "calm" to "aroused", and their feelings of affective valence from "very unpleasant" to "very pleasant" with neutral in the center. The unipolar scales asked participants to separately rate their feelings from "no unpleasant feelings" to "strong unpleasant feelings" and from "no pleasant feelings" to "strong pleasant feelings". 
 
 The authors hypothesized that if the dissociation of valence and arousal that has been historically reported in the affect literature indeed reflects distinct dimensions of affective experience, then arousal should be more than the summed intensity of pleasant and unpleasant valence. However, if the sum of pleasant and unpleasant valence does index self-reported arousal, this might indicate that arousal and valence may not in fact represent distinct affective qualia and instead represent differences in how people introspect about or report on affective experiences.
 
@@ -81,7 +81,7 @@ At the end of study, participants were debriefed with the following message: "Th
 
 During preprocessing, data were anonymized and tidied.
 
-We excluded participants who used mobile devices, browser heights less than 700 pixels, or browser widths less than 1000 pixels (indicating that they were not viewing the experiment in full screen). Participants who made the same rating on all trials were excluded for having not been appropriately attentive. Participants who made more a response in less than 300ms were excluded for not having been appropriately attentive. Participants who failed to answer the attention check question correctly at the end were excluded.
+We excluded participants who used mobile devices, browser heights less than 700 pixels, or browser widths less than 1000 pixels (indicating that they were not viewing the experiment in full screen). Participants who made the same rating on all trials were excluded for having not been appropriately attentive. Participants who made a response in less than 300ms were excluded for not having been appropriately attentive. Participants who failed to answer the attention check question correctly at the end were excluded.
 
 We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations. If linear correlations between our sample's ratings and normative IAPS ratings of bipolar valence and arousal were found to be significant, we assumed that our Mechanical Turk sample's affective responses were generalizeable to a broader population.
 
@@ -139,6 +139,7 @@ Data preparation followed the analysis plan.
 
 ####Load Relevant Libraries and Functions
 library(tidyverse)
+library(dplyr)
 library(jsonlite)
 library(rjson)
 library(RJSONIO)
@@ -153,12 +154,11 @@ Mode <- function(x, na.rm = FALSE) {
 }
 ```
 
-```{r include=FALSE, echo=FALSE}
+```{r include=TRUE, echo=FALSE, error=FALSE, warning=FALSE}
 ###Data Preparation
 
 ####Import data
 # set directory
-#setwd("/Users/Maia/Desktop/Neuro/Stanford/Classes/PSYCH 254/replication_project/kron2013_254gitrepo")
 directory = "../data/"
 # read the csv file names to be loaded in the csv directory
 files <- dir(directory, pattern =".csv") 
