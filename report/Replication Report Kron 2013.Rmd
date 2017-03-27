@@ -10,6 +10,11 @@ output:
       collapsed: false
 ---
 
+```{r global_options, include=FALSE} 
+library(knitr)
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
+```
+
 ##Introduction
 
 This study replicated Study 1 of "How Are You Feeling? Revisiting the Quantification of Emotional Qualia" by A Kron et al. (2013, *Psychological Science*). This study compared two methods of rating emotional qualia in order to determine whether unipolar pleasant/unpleasant affect rating scales could capture as much or more information than the traditionally used bipolar affect rating scales. The study compared ratings of 72 affective pictures from the International Affective Picture System (IAPS) using either bipolar or unipolar scales. The bipolar scales asked participants to rate their feelings of affective arousal from "calm" to "aroused", and their feelings of affective valence from "very unpleasant" to "very pleasant" with neutral in the center. The unipolar scales asked participants to separately rate their feelings from "no unpleasant feelings" to "strong unpleasant feelings" and from "no pleasant feelings" to "strong pleasant feelings". 
@@ -22,7 +27,7 @@ The authors found that summing the unipolar pleasant and unpleasant ratings (`pl
 
 ###Power Analysis
 
-Kron et al.'s original sample was 30 undergraduates, with an effect size of $\rho$ = 0.7549834.
+Kron et al.'s original sample was 30 undergraduates, with an effect size of $\rho$ = 0.755.
 We used `G*power` to calculate post-hoc power for a two-tailed bivariate correlation of *r* = .75: 
 
 **Post-hoc power analysis** ![Post-hoc power analysis](posthocpower.png)
@@ -133,7 +138,7 @@ Finally, we recruited participants online from Amazon Mechanical Turk and presen
 
 Data preparation followed the analysis plan.
 	
-```{r include=FALSE, echo=FALSE}
+```{r include=FALSE}
 ##Clear workspace:
 #rm(list=ls())
 
@@ -154,10 +159,11 @@ Mode <- function(x, na.rm = FALSE) {
 }
 ```
 
-```{r include=TRUE, echo=FALSE, error=FALSE, warning=FALSE}
+```{r}
 ###Data Preparation
 
 ####Import data
+setwd(getwd())
 # set directory
 directory = "../data/"
 # read the csv file names to be loaded in the csv directory
@@ -245,7 +251,7 @@ raw_data = raw_data %>%
 
 ### Anonymize WorkerIDs
 
-setwd("/Users/Maia/Desktop/Neuro/Stanford/Classes/PSYCH 254/replication_project/kron2013_254gitrepo/analysis/")
+setwd("../analysis/")
 
 anon_IDkey = data.frame(WorkerID = unique(raw_data$WorkerID), subID = c(1:length(unique(raw_data$WorkerID))))
 write.csv(anon_IDkey, file="anonymized-IDs-key.csv")
@@ -311,16 +317,14 @@ d_filtered$rating = factor(d_filtered$rating)
 
 ### Save Pre-Processed Data
 
-setwd("/Users/Maia/Desktop/Neuro/Stanford/Classes/PSYCH 254/replication_project/kron2013_254gitrepo/analysis/")
+setwd("../analysis/")
 save(d_filtered, file="preprocessed_data.R")
 
 ```
 
 We also compared our participants' ratings to IAPS normative ratings to ensure that our sample roughly matched response patterns in larger populations, as indicated in our analysis plan.
 
-```{r message=FALSE, warning=FALSE}
-setwd("/Users/Maia/Desktop/Neuro/Stanford/Classes/PSYCH 254/replication_project/kron2013_254gitrepo")
-
+```{r}
 IAPSnorms <- read_csv("../analysis/normativeIAPSratings.csv")
 
 d = d_filtered %>%
@@ -368,7 +372,7 @@ ggplot(data=d_comparenorms,
   ggthemes::theme_few()
 ```
 
-We [confirmed] that both bipolar valence and arousal ratings in our sample were [significantly] linearly correlated with normative IAPS ratings for each item (valence: *r* = `r res1$coefficients["bipolarvalence","Estimate"]`, *p* = `r res1$coefficients["bipolarvalence","Pr(>|t|)"]`; arousal: *r* = `r res2$coefficients["arousal","Estimate"]`, *p* = `r res2$coefficients["arousal","Pr(>|t|)"]`). This indicated that the affective responses of our Mechanical Turk sample [DID or DID NOT] generalize to the broader population.
+We found that both bipolar valence and arousal ratings in our sample [WERE/WERE NOT significantly] linearly correlated with normative IAPS ratings for each item (valence: *r* = `r signif(res1$coefficients["bipolarvalence","Estimate"],digits=3)`, *p* = `r signif(res1$coefficients["bipolarvalence","Pr(>|t|)"],digits=3)`; arousal: *r* = `r signif(res2$coefficients["arousal","Estimate"],digits=3)`, *p* = `r signif(res2$coefficients["arousal","Pr(>|t|)"],digits=3)`). This indicated [a low/moderate/high] association between the affective responses of our Mechanical Turk sample and Lang et al.'s normative ratings, suggesting that our sample was [not very/moderately/highly] representative of the broader population.
 
 ### Confirmatory analysis
 
@@ -406,9 +410,9 @@ ggplot(data=d,
   ggthemes::theme_few()
 ```
 
-We found that there [WAS/WAS NOT] a significant linear correlation between arousal ratings and the summed unipolar pleasant+unpleasant ratings (`r  res3$coefficients["sum_pl_un","Estimate"]`, *p* = `r res3$coefficients["sum_pl_un","Pr(>|t|)"]`
+We found that there [WAS/WAS NOT] a significant linear correlation between arousal ratings and the summed unipolar pleasant+unpleasant ratings (*r* = `r signif(res3$coefficients["sum_pl_un","Estimate"],digits=3)`, *p* = `r signif(res3$coefficients["sum_pl_un","Pr(>|t|)"],digits=3)`
 ) (see Figure). 
-This finding [DID/DID NOT] replicate Kron et al.'s reported finding (*r* = 0.75, *p* < 0.0001, *$R^2$* = 0.57). 
+We can compare this with Kron et al.'s reported finding of a strong linear association between arousal and the summed unipolar pleasant+unpleasant ratings (*r* = 0.75, *p* < 0.0001, *$R^2$* = 0.57). 
 
 ###Exploratory analyses
 
@@ -431,9 +435,9 @@ ggplot(data=d,
   ggthemes::theme_few()
 ```
 
-We found that there [WAS/WAS NOT] a significant linear correlation between valence ratings and the difference of unipolar pleasant-unpleasant ratings (`r  res4$coefficients["diff_pl_un","Estimate"]`, *p* = `r res4$coefficients["diff_pl_un","Pr(>|t|)"]`
+We found that there [WAS/WAS NOT] a significant linear correlation between valence ratings and the difference of unipolar pleasant-unpleasant ratings (*r* = `r  signif(res4$coefficients["diff_pl_un","Estimate"],digits=3)`, *p* = `r signif(res4$coefficients["diff_pl_un","Pr(>|t|)"],digits=3)`
 ) (see Figure). 
-This finding [DID/DID NOT] replicate Kron et al.'s reported finding (*r* = -0.13, *p* > 0.05). 
+We can compare this with Kron et al.'s reported finding of a near-perfect correlation between bipolar valence ratings and the difference between unipolar pleasant and unpleasant ratings (*r* = 0.96, *p* < 0.0001). 
 
 ## Discussion
 

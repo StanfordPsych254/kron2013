@@ -273,8 +273,8 @@ function getiapsFile(image_num) {
 // Maker-getter is a function that randomizes a particular number of participants to each condition, set by condCounts. This ensures that you have an even number of participants per condition, rather than randomizing and hoping it evens out.
 // Call the maker getter to get the cond variable, which sets the condition a given participant is in:
 try {
-    var filename = "MTB_kron_conditioncount_pilotB" // file keeping count of the randomization: "MTB_kron_conditioncount" was Pilot A; "MTB_kron_conditioncount_pilotB" was pilotB; "MTB_kron_conditioncount_exp" was final experiment
-    var condCounts = "1,1;2,1;3,1;4,1;5,1;6,1"  //sets number of conditions and number of participants per condition: "MTB_kron_conditioncount" was 8/condition; "MTB_kron_conditioncount_pilotB" was 1/condition; "MTB_kron_conditioncount_exp" was 8/condition
+    var filename = "MTB_kron_conditioncount_exp" // file keeping count of the randomization: "MTB_kron_conditioncount" was Pilot A; "MTB_kron_conditioncount_pilotB" was pilotB; "MTB_kron_conditioncount_exp" was final experiment
+    var condCounts = "1,8;2,8;3,8;4,8;5,8;6,8"  //sets number of conditions and number of participants per condition: "MTB_kron_conditioncount" was 8/condition; "MTB_kron_conditioncount_pilotB" was 1/condition; "MTB_kron_conditioncount_exp" was 8/condition
     xmlHttp.open( "GET", "https://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" +  // call the maker-getter script from Mike Frank's website
    condCounts +"&filename=" + filename, false );
     xmlHttp.send( null );
