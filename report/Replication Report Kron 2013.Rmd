@@ -118,7 +118,7 @@ Our instructions were presented in written form at the start of the experiment. 
 **It is important that your eyes be directed towards the screen when the pictures to be rated are shown. You'll have only a few seconds to watch each picture. Please view the picture for the entire time it is on and make your ratings immediately after the picture is removed.**"
   
 We used the same instructions detailed in Kron et al. on each of our rating scales, rather than only at initial instructions. In Kron et al., "for the bipolar valence scale, which ranged from unpleasant feelings (−4) to pleasant feelings (4), participants were told, “At one extreme of the scale, you feel completely unpleasant, unhappy, annoyed, unsatisfied, melancholic, or despaired. At the other end of the scale, you feel com- pletely pleased, happy, satisfied, content, or hopeful.” Participants were further informed that a score of 0, at the scale’s midpoint, indicated “a completely neutral, neither pleasant/happy nor unpleasant/sad state.”
-For the arousal scale, which ranged from calm (0) to aroused (8), participants were instructed that “one extreme represents feeling stimulated, excited, frenzied, jittery, wide-awake, or aroused; and at the other end of the scale, you feel completely relaxed, calm, sluggish, dull, sleepy, or bored.” In the separate unipolar-scales condition, par- ticipants followed the same instructions they had used for the bipolar valence scale except that they were instructed to rate their feelings using two separate scales, one rang- ing from no pleasant feelings (0) to strong pleasant feelings (8), and the other ranging from no unpleasant feelings (0) to strong unpleasant feelings (8)."
+For the arousal scale, which ranged from calm (0) to aroused (8), participants were instructed that “one extreme represents feeling stimulated, excited, frenzied, jittery, wide-awake, or aroused; and at the other end of the scale, you feel completely relaxed, calm, sluggish, dull, sleepy, or bored.” In the separate unipolar-scales condition, par- ticipants followed the same instructions they had used for the bipolar valence scale except that they were instructed to rate their feelings using two separate scales, one ranging from no pleasant feelings (0) to strong pleasant feelings (8), and the other ranging from no unpleasant feelings (0) to strong unpleasant feelings (8)."
   
 We added four training trials at the start of the experiment; Kron did not detail how many training trials were run as part of the study's verbal training.
 
@@ -139,18 +139,18 @@ Half of participants were also randomly assigned to one of two scale orders (for
 Finally, we recruited participants online from Amazon Mechanical Turk and presented the experiment online through users' internet browsers. Although we asked participants to use full-screen browsers on personal computers (not mobile devices), we could not control viewing conditions to the extent described in the original study, in which "pictures were presented full screen onto a 19-inch monitor situated 0.5 m away from the participant." We also did not measure any psychophysiological measures during the replication, as in the original. We collected data on browser window size and excluded participants who used mobile devices or browser widths of less than 1000 pixels.
 
 
-<!-- ### Methods Addendum (Post Data Collection) -->
+### Methods Addendum (Post Data Collection)
 
-<!-- You can comment this section out prior to final report with data collection. -->
+#### Actual Sample
 
-<!-- #### Actual Sample -->
-<!--   Sample size, demographics, data exclusions based on rules spelled out in analysis plan -->
+  We collected data from 48 participants on Mechanical Turk. Due to an error with the Mechanical Turk interface, data were not logged for 31 participants, leaving an n=17. One participant was further excluded for failing the attention checks.
 
-<!-- #### Differences from pre-data collection methods plan -->
-<!--   Any differences from what was described as the original plan, or “none”. -->
+#### Differences from pre-data collection methods plan
 
-<!-- ##Results -->
+  For the last 6 participants collected, we added language to the instructions page and the debriefing page reminding participants to "CLICK FINISH" in order to log the data.
+  No further changes were made to the methods.
 
+##Results
 
 ### Data preparation
 
@@ -198,65 +198,69 @@ for (file in files) {
 
   for (i in 1:dim(jd)[1]) { #go through each WorkerID
   #output the Answers.data in json format, then read it back into R using rjsonio and rjsonlite
-  answers <- jd$Answer.data[i]
-  if (is.na(answers) != TRUE) {    #if there is data, download it:
-  file.create("answers.json")
-  fileConn <- file("answers.json")
-  writeLines(answers, fileConn)
-  close(fileConn)
-  #file.show("answers.json")
-  answers <- RJSONIO::fromJSON("answers.json")
-
-  #create a data frame with the column names on the left
-  id <- data_frame(rating_order = answers$scale_order,
-                  rating_type = answers$scale_type,
-                  rating = answers$scale_content,
-                  is_practice = answers$is_practice,
-                  trialnum = answers$trial,
-                  subblock = answers$subblock,
-                  block = answers$block, 
-                  iaps_trial = answers$iaps_trial,
-                  
-                  response = answers$rating,
-                  duration = answers$elapsed_ms
-                  )
-  
-  id$WorkerID <- jd$WorkerId[i]
-  id$subID <- i
-  id$gender <- answers$gender
-  id$age <- answers$age
-  if (is.null(answers$attentioncheck) == FALSE) {
-    id$attentioncheck <- answers$attentioncheck
-  } else {
-    id$attentioncheck <- NA
-  }
-  id$chronotype <- answers$chronotype
-  if (is.null(answers$expt_gen) == FALSE) {
-    id$comments <- answers$expt_gen
-  } else {
-    id$comments <- NA
-  }
-  id$onmobile = answers$checkmobile
-  id$browsertype = answers$user_agent
-  id$date = answers$date
-  id$AcceptTime = jd$AcceptTime[i]
-  id$SubmitTime = jd$SubmitTime[i]
-  id$subblock_order <- factor(paste(answers$subblock_order[[1]][1][1],answers$subblock_order[[1]][2][1],answers$subblock_order[[1]][3][1],answers$subblock_order[[1]][4][1], sep=""))
-  id$browser_height <- Mode(answers$window_height) #finds browser height used throughout most of experiment
-  id$browser_width <- Mode(answers$window_width) #finds browser width used throughout most of experiment
-  
-  # append the dataframe for that json file to the big data frame 
-  raw_data <- bind_rows(raw_data, id)
-  
-  #remove answers.json file
-    rm(answers)
-    file.remove("answers.json")
-  
-  } else {
-    workers_without_data = rbind(workers_without_data, jd$WorkerId[i]) #create list of people w/o data
-    
-    #remove answers.json file
-    rm(answers)
+    if (("Answer.data" %in% colnames(jd)) == TRUE){
+      answers <- jd$Answer.data[i]
+      if (is.na(answers) != TRUE) {    #if there is data, download it:
+        file.create("answers.json")
+        fileConn <- file("answers.json")
+        writeLines(answers, fileConn)
+        close(fileConn)
+        #file.show("answers.json")
+        answers <- RJSONIO::fromJSON("answers.json")
+        
+        #create a data frame with the column names on the left
+        id <- data_frame(rating_order = answers$scale_order,
+                         rating_type = answers$scale_type,
+                         rating = answers$scale_content,
+                         is_practice = answers$is_practice,
+                         trialnum = answers$trial,
+                         subblock = answers$subblock,
+                         block = answers$block, 
+                         iaps_trial = answers$iaps_trial,
+                         
+                         response = answers$rating,
+                         duration = answers$elapsed_ms
+        )
+        
+        id$WorkerID <- jd$WorkerId[i]
+        id$subID <- i
+        id$gender <- answers$gender
+        id$age <- answers$age
+        if (is.null(answers$attentioncheck) == FALSE) {
+          id$attentioncheck <- answers$attentioncheck
+        } else {
+          id$attentioncheck <- NA
+        }
+        id$chronotype <- answers$chronotype
+        if (is.null(answers$expt_gen) == FALSE) {
+          id$comments <- answers$expt_gen
+        } else {
+          id$comments <- NA
+        }
+        id$onmobile = answers$checkmobile
+        id$browsertype = answers$user_agent
+        id$date = answers$date
+        id$AcceptTime = jd$AcceptTime[i]
+        id$SubmitTime = jd$SubmitTime[i]
+        id$subblock_order <- factor(paste(answers$subblock_order[[1]][1][1],answers$subblock_order[[1]][2][1],answers$subblock_order[[1]][3][1],answers$subblock_order[[1]][4][1], sep=""))
+        id$browser_height <- Mode(answers$window_height) #finds browser height used throughout most of experiment
+        id$browser_width <- Mode(answers$window_width) #finds browser width used throughout most of experiment
+        
+        # append the dataframe for that json file to the big data frame 
+        raw_data <- bind_rows(raw_data, id)
+        
+        #remove answers.json file
+        rm(answers)
+        file.remove("answers.json")
+        
+      } else {
+        workers_without_data = rbind(workers_without_data, jd$WorkerId[i]) #create list of people w/o data
+        
+        #remove answers.json file
+        rm(answers)
+      }
+    } else {
+      workers_without_data = rbind(workers_without_data, jd$WorkerId[i]) #create list of people w/o data 
     }
   }
 }
@@ -264,7 +268,6 @@ for (file in files) {
 #Rearrange column ordering:
 raw_data = raw_data %>% 
     dplyr::select(subID, WorkerID, gender:chronotype, attentioncheck, date:SubmitTime, onmobile, browsertype, browser_height, browser_width, subblock_order, rating_order:duration, comments)
-
 
 
 ### Anonymize WorkerIDs
@@ -283,7 +286,17 @@ raw_data_anon = raw_data %>%
   dplyr::select(-WorkerID)
 
 
+#Save raw anonymized data
+setwd("../data/")
+save(raw_data_anon, file = "raw_data_anon.R")
+write.csv(raw_data_anon, file = "raw_data_anon.csv")
+
+
+
 #### Participant Exclusion
+
+setwd("../data/")
+load("raw_data_anon.R")
 
 #create dataframe of all subIDs who responded in a relevant time frame
 passed_attentioncheck1 = raw_data_anon %>%
@@ -390,7 +403,7 @@ ggplot(data=d_comparenorms,
   ggthemes::theme_few()
 ```
 
-We found that both bipolar valence and arousal ratings in our sample [WERE/WERE NOT significantly] linearly correlated with normative IAPS ratings for each item (valence: *r* = `r signif(res1$coefficients["bipolarvalence","Estimate"],digits=3)`, *p* = `r signif(res1$coefficients["bipolarvalence","Pr(>|t|)"],digits=3)`; arousal: *r* = `r signif(res2$coefficients["arousal","Estimate"],digits=3)`, *p* = `r signif(res2$coefficients["arousal","Pr(>|t|)"],digits=3)`). This indicated [a low/moderate/high] association between the affective responses of our Mechanical Turk sample and Lang et al.'s normative ratings, suggesting that our sample was [not very/moderately/highly] representative of the broader population.
+We found that both bipolar valence and arousal ratings in our sample were significantly linearly correlated with normative IAPS ratings for each item (valence: *r* = `r signif(res1$coefficients["bipolarvalence","Estimate"],digits=3)`, *p* = `r signif(res1$coefficients["bipolarvalence","Pr(>|t|)"],digits=3)`; arousal: *r* = `r signif(res2$coefficients["arousal","Estimate"],digits=3)`, *p* = `r signif(res2$coefficients["arousal","Pr(>|t|)"],digits=3)`). This indicated a relatively strong association between the affective responses of our Mechanical Turk sample and Lang et al.'s normative ratings, suggesting that our sample was representative of the broader population.
 
 ### Confirmatory analysis
 
@@ -409,7 +422,6 @@ d = d_filtered %>%
 #Linear Regression Model:
 keyModel = lm(arousal ~ sum_pl_un, data=d)
 res3 = summary(keyModel)
-
 ```
 
 We recreated Kron et al.'s original figure:
@@ -428,11 +440,24 @@ ggplot(data=d,
   ggthemes::theme_few()
 ```
 
-We found that there [WAS/WAS NOT] a significant linear correlation between arousal ratings and the summed unipolar pleasant+unpleasant ratings (*r* = `r signif(res3$coefficients["sum_pl_un","Estimate"],digits=3)`, *p* = `r signif(res3$coefficients["sum_pl_un","Pr(>|t|)"],digits=3)`
-) (see Figure). 
+We found that there was a significant linear correlation between arousal ratings and the summed unipolar pleasant+unpleasant ratings (*r* = `r signif(res3$coefficients["sum_pl_un","Estimate"],digits=3)`, *p* = `r signif(res3$coefficients["sum_pl_un","Pr(>|t|)"],digits=3)`) (see Figure). 
 We can compare this with Kron et al.'s reported finding of a strong linear association between arousal and the summed unipolar pleasant+unpleasant ratings (*r* = 0.75, *p* < 0.0001, *$R^2$* = 0.57). 
 
 ###Exploratory analyses
+
+We checked whether, due to our reduced sample, stimuli and ratings scales were presented unevenly.
+
+```{r}
+table(d_filtered$block)
+#only Block 2 stimuli shown
+
+d_filtered %>%
+  select(iaps_trial, rating_type) %>%
+  table()
+#Stimuli unevenly rated as bipolar or unipolar
+```
+We found that only 1/3 of the 72 stimuli were viewed by the sample, although all participants viewed the same stimuli. We found that stimuli were not rating with bipolar and unipolar scales evenly. Our replication study was therefore not appropriately counterbalanced.
+
 
 We also ran a linear regression model to determine whether ratings of bipolar valence were significantly associated with the difference between unipolar pleasant and unpleasant ratings.
 
@@ -453,19 +478,25 @@ ggplot(data=d,
   ggthemes::theme_few()
 ```
 
-We found that there [WAS/WAS NOT] a significant linear correlation between valence ratings and the difference of unipolar pleasant-unpleasant ratings (*r* = `r  signif(res4$coefficients["diff_pl_un","Estimate"],digits=3)`, *p* = `r signif(res4$coefficients["diff_pl_un","Pr(>|t|)"],digits=3)`
+We found that there was a very significant linear correlation between valence ratings and the difference of unipolar pleasant-unpleasant ratings (*r* = `r  signif(res4$coefficients["diff_pl_un","Estimate"],digits=3)`, *p* = `r signif(res4$coefficients["diff_pl_un","Pr(>|t|)"],digits=3)`
 ) (see Figure). 
-We can compare this with Kron et al.'s reported finding of a near-perfect correlation between bipolar valence ratings and the difference between unipolar pleasant and unpleasant ratings (*r* = 0.96, *p* < 0.0001). 
+We can compare this with Kron et al.'s reported finding of a near-perfect correlation between bipolar valence ratings and the difference between unipolar pleasant and unpleasant ratings (*r* = 0.96, *p* < 0.0001). We did not find as large an *r* as in the original paper.
 
 ## Discussion
 
 ### Summary of Replication Attempt
 
-Open the discussion section with a paragraph summarizing the primary result from the confirmatory analysis and the assessment of whether it replicated, partially replicated, or failed to replicate the original result.  
+Our replication project fully replicated the key finding from Kron et al., 2013 despite several important limitations and differences from the original study.
+
+1) Despite our reduced n, we still reached 95% a priori power with a sample of 16.
+
+2) Because of missing data, participants saw only 1/3 of the possible 72 stimuli. We therefore replicated Kron's study with a much more limited item set and a slightly different range of affective ratings than in the original. 
+
+As a first step, our replication demonstrates the robustness of Kron et al.'s unipolar scales to measure both affective valence and arousal in an online context with written instructions, even with a reduced sample size and a different and reduced stimulus set.
 
 ### Commentary
 
-Add open-ended commentary (if any) reflecting (a) insights from follow-up exploratory analysis, (b) assessment of the meaning of the replication (or not) - e.g., for a failure to replicate, are the differences between original and present study ones that definitely, plausibly, or are unlikely to have been moderators of the result, and (c) discussion of any objections or challenges raised by the current and original authors about the replication attempt.  None of these need to be long.
+Our replication suggests that unipolar pleasant and unpleasant rating scales provide a promising alternative measure to bipolar affect ratings scales across a variety of contexts and instruction styles.
 
 ### References
 
